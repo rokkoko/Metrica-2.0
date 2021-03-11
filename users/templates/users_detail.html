@@ -1,0 +1,18 @@
+{% load bootstrap4 %}
+
+<body class="text-center">
+<table border="2" align="center" class="row h-auto mb-4" cellpadding="7">
+	<tr>
+		<th>User ID</th>
+		<th>Nickname </th>
+		<th>Name</th>
+		<th>E-mail</th>
+	</tr>
+		<tr>
+			<td>{{ object.id }}</td>
+			<td>{{ object.username }}</td>
+			<td>{{ object }}</td>
+			<td>{{ object.email }}</td>
+		</tr>
+</table>
+</body>

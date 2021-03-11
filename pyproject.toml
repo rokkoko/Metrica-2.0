@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "metrica"
+version = "0.1.0"
+description = ""
+authors = ["egor187 <py.egor.py@gmail.com>"]
+packages = [
+    { include = "Metrica_project" },
+    { include = "games" },
+    { include = "users" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+Django = "^3.1.7"
+gunicorn = "^20.0.4"
+psycopg2 = "^2.8.6"
+python-dotenv = "^0.15.0"
+django-bootstrap4 = "^2.3.1"
+python-telegram-bot = "^13.3"
+rollbar = "^0.15.2"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

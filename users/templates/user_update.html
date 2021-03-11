@@ -1,0 +1,11 @@
+{% load bootstrap4 %}
+
+    <h1 class="mb-4">"Update profile"</h1>
+
+    <form method="POST" action="{% url 'users:users_update' object.id %}">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <div class="form-group">
+            <input class="btn btn-primary" type="submit" value='Update'>
+        </div>
+    </form>

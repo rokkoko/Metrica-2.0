@@ -1,0 +1,21 @@
+<h2>Users</h2>
+    <div class="table-responsive">
+        <table class="table table-striped table-sm" cellpadding="7">
+          <thead>
+            <tr>
+              <th>User ID</th>
+              <th>Nickname</th>
+              <th>Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in users_list %}
+            <tr>
+              <td>{{user.id}}</td>
+              <td>{{user.username}}</td>
+              <td>{{user}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+    </div>
