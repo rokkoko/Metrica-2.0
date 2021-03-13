@@ -33,9 +33,11 @@ def get_user_id_by_name(name):
 
 
 def add_user_into_db_simple(username):
-    new_user = CustomUser.objects.get_or_create(username=username)[0].pk
-    print(f'New user "{username}" added to db. WELCOME!')
-    return new_user
+    new_user = CustomUser.objects.get_or_create(username=username)
+    if new_user[1]:
+        print(f'New user "{username}" added to db. WELCOME!')
+    print(f'User "{username}" already in db. Welcome back!')
+    return new_user[0].pk
 
 
 def add_user_into_db_from_score_pairs(score_pairs:dict):
