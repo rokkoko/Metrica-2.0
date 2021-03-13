@@ -43,11 +43,12 @@ def add_user_into_db_from_score_pairs(score_pairs:dict):
     :param score_pairs: dict {"username": score:int}
     :return: list of id's new users added to db
     '''
-    new_users_id_list = []
+    users_id_list = []
     for username in score_pairs.keys():
-        if CustomUser.objects.get_or_create(username=username)[1]:
-            new_users_id_list.append(CustomUser.objects.get_or_create(username=username)[0].id)
+        user = CustomUser.objects.get_or_create(username=username)
+        users_id_list.append(user[0].pk)
+        if user[1]:
             print(f'{username} added to DB')
         else:
             print(f'{username} already in DB')
-    return new_users_id_list
+    return users_id_list
