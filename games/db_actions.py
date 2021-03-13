@@ -24,7 +24,7 @@ def get_game_names_list():
     """
     :return: list() of names of all games in db
     """
-    queryset = Games.objecst.all()
+    queryset = Games.objects.all()
     _list = [elem.name for elem in queryset]
     return _list
 
@@ -90,7 +90,7 @@ def add_scores(game_name, score_pairs: dict):
         GameScores.objects.create(
             game_session=game_session_object,
             user=user,
-            score=score_pairs[username]
+            score=score_pairs[username],
         )
         result_msg_dict[username] = \
             GameScores.objects.filter(game_session__game=game).filter(user=user).aggregate(Sum('score'))['score__sum']
@@ -109,9 +109,10 @@ def stats_repr(game):
     users_ids = [i.id for i in CustomUser.objects.filter(gamescores__game_session__game=game_object).distinct()]
     result_msg_dict = dict()
     for user_id in users_ids:
+        user = get_user_object_by_id(user_id)
         username = get_username_by_id(user_id)
         result_msg_dict[username] = \
             GameScores.objects.filter(
                 game_session__game=game_object
-            ).filter(user=username).aggregate(Sum('score'))['score__sum']
+            ).filter(user=user).aggregate(Sum('score'))['score__sum']
     return result_msg_dict
