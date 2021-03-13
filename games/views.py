@@ -13,7 +13,7 @@ from Metrica_project.stats_bot import StatsBot
 stats_bot_token = os.getenv("STATS_BOT_TOKEN_TEST")
 
 
-# @csrf_exempt
+@csrf_exempt
 def stats_proceed_view(request):
     stats_bot = StatsBot(stats_bot_token)
 

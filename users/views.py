@@ -93,7 +93,7 @@ def invite_to_register(request):
                 OR redirect to registration page (form)
     """
     if request.user.id:
-        return HttpResponse('https://heroku' + str(reverse_lazy('users:users_update', args=[request.user.id])))
+        return HttpResponse(URL_PATH + str(reverse_lazy('users:users_update', args=[request.user.id])))
     return HttpResponseRedirect(reverse_lazy('users:users_register'))
 
 
