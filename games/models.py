@@ -16,8 +16,14 @@ class GameSession(models.Model):
     game = models.ForeignKey(Games, on_delete=models.CASCADE, default='default_game')
     created_at = models.DateTimeField()
 
+    def __str__(self):
+        return str(self.created_at)
+
 
 class GameScores(models.Model):
     game_session = models.ForeignKey(GameSession, on_delete=models.CASCADE, related_name='game_session')
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     score = models.IntegerField('score')
+
+    def __str__(self):
+        return str(self.score)
