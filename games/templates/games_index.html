@@ -1,0 +1,27 @@
+<h2>Games</h2>
+    <div class="table-responsive">
+        <table class="table table-striped table-sm" cellpadding="7">
+          <thead>
+            <tr>
+              <th>Game ID</th>
+              <th>Game name</th>
+              <th>All game sessions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for game in games %}
+            <tr>
+              <td>{{game.pk}}</td>
+              <td>
+                  <a href={% url 'games:games_detail' game.pk %}>{{game.name}}
+              </td>
+              <td>
+                {% for session in game.gamesession_set.all %}
+                    <p>{{ session }}</p>
+                {% endfor %}
+            </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+    </div>
