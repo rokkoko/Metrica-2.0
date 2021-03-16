@@ -7,12 +7,18 @@
 		<th>Nickname </th>
 		<th>Name</th>
 		<th>E-mail</th>
+		<th>Last 5 games played</th>
 	</tr>
 		<tr>
 			<td>{{ object.id }}</td>
 			<td>{{ object.username }}</td>
 			<td>{{ object }}</td>
 			<td>{{ object.email }}</td>
+			<td>
+				{% for game_session in last_five_games_played %}
+					{{ game_session }}
+				{% endfor %}
+			</td>
 		</tr>
 </table>
 </body>
