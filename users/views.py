@@ -71,7 +71,9 @@ class UsersDetailView(DetailView):
             )
         )
 
-        context["last_five_games_played"] = Games.objects.distinct().filter(gamesession__game_session__user__id=self.kwargs['pk'])
+        context["last_five_games_played"] = Games.objects.distinct().filter(
+            sessions__scores__user__id=self.kwargs['pk']
+        )
 
         return context
 

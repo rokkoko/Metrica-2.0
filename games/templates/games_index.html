@@ -16,7 +16,7 @@
                   <a href={% url 'games:games_detail' game.pk %}>{{game.name}}
               </td>
               <td>
-                {% for session in game.gamesession_set.all %}
+                {% for session in game.sessions.all %}
                     <p>{{ session }}</p>
                 {% endfor %}
             </td>

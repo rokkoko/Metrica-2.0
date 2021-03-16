@@ -13,7 +13,7 @@ class Games(models.Model):
 
 
 class GameSession(models.Model):
-    game = models.ForeignKey(Games, on_delete=models.CASCADE, default='default_game')
+    game = models.ForeignKey(Games, on_delete=models.CASCADE, default='default_game', related_name='sessions')
     created_at = models.DateTimeField()
     class Meta():
         ordering = ['-created_at']
@@ -23,8 +23,8 @@ class GameSession(models.Model):
 
 
 class GameScores(models.Model):
-    game_session = models.ForeignKey(GameSession, on_delete=models.CASCADE, related_name='game_session')
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    game_session = models.ForeignKey(GameSession, on_delete=models.CASCADE, related_name='scores')
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='scores')
     score = models.IntegerField('score')
 
     def __str__(self):

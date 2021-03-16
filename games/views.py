@@ -35,7 +35,7 @@ class GamesDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context['users'] = CustomUser.objects.distinct().filter(gamescores__game_session__game__pk=self.kwargs['pk'])
+        context['users'] = CustomUser.objects.distinct().filter(scores__game_session__game__pk=self.kwargs['pk'])
 
         context['scores'] = dict()
 
