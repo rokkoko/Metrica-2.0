@@ -6,6 +6,7 @@ from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import CustomUser
 from games.models import Games, GameScores, GameSession
 from .forms import CustomUserCreationForm, CustomUserUpdateForm
@@ -47,7 +48,7 @@ class UsersListView(ListView):
     #     return queryset
 
 
-class UsersDetailView(DetailView):
+class UsersDetailView(LoginRequiredMixin, DetailView):
     model = CustomUser
     template_name = 'users_detail.html'
 
@@ -78,13 +79,13 @@ class UsersDetailView(DetailView):
         return context
 
 
-class UsersCreateView(CreateView):
+class UsersCreateView(LoginRequiredMixin, CreateView):
     model = CustomUser
     form_class = CustomUserCreationForm
     template_name = 'user_register.html'
 
 
-class UsersUpdateView(UpdateView):
+class UsersUpdateView(LoginRequiredMixin, UpdateView):
     model = CustomUser
     form_class = CustomUserUpdateForm
     template_name = 'user_update.html'
