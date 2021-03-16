@@ -10,6 +10,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import CustomUser
 from games.models import Games, GameScores, GameSession
 from .forms import CustomUserCreationForm, CustomUserUpdateForm
+from django.contrib import messages
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from users.db_actions import add_user_into_db_simple
 import json
@@ -90,6 +91,13 @@ class UsersUpdateView(LoginRequiredMixin, UpdateView):
     form_class = CustomUserUpdateForm
     template_name = 'user_update.html'
     success_url = reverse_lazy('users:users_index')
+    perm_denied_msg = 'Permission denied. Only owner can change account'
+
+    def dispatch(self, request, *args, **kwargs):
+        if self.kwargs['pk'] != request.user.pk:
+            messages.error(request, self.perm_denied_msg)
+            return HttpResponseRedirect(reverse_lazy('users:users_index'))
+        return super().dispatch(request, *args, **kwargs)
 
 
 def invite_to_register(request):
