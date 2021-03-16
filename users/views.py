@@ -7,6 +7,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 from .models import CustomUser
+from games.models import Games, GameScores, GameSession
 from .forms import CustomUserCreationForm, CustomUserUpdateForm
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from users.db_actions import add_user_into_db_simple
@@ -69,6 +70,9 @@ class UsersDetailView(DetailView):
                 'Email'
             )
         )
+
+        context["last_five_games_played"] = 100
+
         return context
 
 
