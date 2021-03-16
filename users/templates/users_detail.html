@@ -15,8 +15,8 @@
 			<td>{{ object }}</td>
 			<td>{{ object.email }}</td>
 			<td>
-				{% for game_session in last_five_games_played %}
-					{{ game_session }}
+				{% for game in last_five_games_played %}
+					<a href={% url 'games:games_detail' game.pk %}>{{ game }}</a>
 				{% endfor %}
 			</td>
 		</tr>
