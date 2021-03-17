@@ -103,6 +103,10 @@ DATABASES = {
         'PASSWORD': os.getenv('DB_PASSWORD'),
         'HOST': '',
         'PORT': '5432',
+        'TEST': {
+            'NAME': os.getenv('TEST_DB'),
+            'USER': os.getenv('DB_USER')
+        }
     }
 }
 # if testing (sys.argv contain 'test') db settings set to
