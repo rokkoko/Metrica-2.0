@@ -7,11 +7,13 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 from .models import CustomUser
-from .forms import CustomUserCreationForm, CustomUserUpdateForm
+from .forms import CustomUserCreationForm, CustomUserUpdateForm, FeedbackForm
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from users.db_actions import add_user_into_db_simple
 import json
 from django.core import serializers
+from django.core.mail import send_mail
+from django.contrib import messages
 
 URL_PATH = 'https://mysterious-reef-49447.herokuapp.com'
 
@@ -83,6 +85,20 @@ class UsersUpdateView(UpdateView):
     form_class = CustomUserUpdateForm
     template_name = 'user_update.html'
     success_url = reverse_lazy('users:users_index')
+
+
+def feedback_view(request):
+    if request.method == "POST":
+        form = FeedbackForm(request.POST)
+        if form.is_valid():
+            send_mail(form.cleaned_data['subject'], form.cleaned_data['content'], from_email='', recipient_list=['py.egor.py@gmail.com',])
+            messages.info(request, 'Письмо отправлено')
+            HttpResponseRedirect(reverse_lazy('users:users_index'))
+        else:
+            messages.error(request, 'Невалидная форма')
+            HttpResponse(reverse_lazy('users:users_index'))
+    form = FeedbackForm()
+    return render(request, 'feedback.html', {'form': form})
 
 
 def invite_to_register(request):
