@@ -161,3 +161,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_PORT = 465
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("MAIL_PASSWORD")
+EMAIL_USE_SSL = True
+DEFAULT_FROM_EMAIL = ''  # from_email in send_mail()
