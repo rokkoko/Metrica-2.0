@@ -23,7 +23,10 @@ def email_send():
     worst_players_row = last_five_scores.filter(score=min_score)
 
     for row in worst_players_row:
-        recipients_email.append(row.user.email)
+        if row.user.email not in recipients_email:
+            recipients_email.append(row.user.email)
+        else:
+            continue
 
     send_mail(subject=subject, message=message, from_email=None, recipient_list=recipients_email)
 
