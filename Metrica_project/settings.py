@@ -30,7 +30,10 @@ SECRET_KEY = os.getenv('DJANGO_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'a-metrica.herokuapp.com',
+    'localhost',
+]
 
 
 # Application definition
