@@ -16,7 +16,7 @@ from users.db_actions import add_user_into_db_simple
 import json
 from django.core import serializers
 
-URL_PATH = 'https://mysterious-reef-49447.herokuapp.com'
+URL_PATH = 'https://a-metrica.herokuapp.com'
 
 
 class UsersLoginView(LoginView):
