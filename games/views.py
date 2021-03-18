@@ -1,6 +1,6 @@
 import os
 import json
-from .models import Games, GameSession, GameScores
+from games.models import Games, GameSession, GameScores
 from users.models import CustomUser
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
