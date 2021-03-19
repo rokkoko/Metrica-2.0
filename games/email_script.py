@@ -14,7 +14,7 @@ from django.db.models import Min
 
 def email_send():
     subject = 'Псс, паря, чо с игрой-то, а?'
-    message = 'А ну-ка подтяни свою игру. За последние 5 игровых сейсий ты набрал меньше всего очков'
+    message = 'А ну-ка подтяни свою игру. За последние 5 игровых сейсий ты набрал меньше всего очков. TEST 19.03'
     recipients_email = []
 
     last_five_sessions = GameSession.objects.all()[:5]
