@@ -1,3 +1,4 @@
+import os
 from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
 from django.http import HttpResponse, HttpResponseRedirect
@@ -9,12 +10,15 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import CustomUser
 from games.models import Games, GameScores, GameSession
-from .forms import CustomUserCreationForm, CustomUserUpdateForm
+from .forms import CustomUserCreationForm, CustomUserUpdateForm, FeedbackForm
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from users.db_actions import add_user_into_db_simple
 import json
 from django.core import serializers
+from django.core.mail import send_mail
+from django.contrib import messages
+from dotenv import load_dotenv, find_dotenv
 
 URL_PATH = 'https://a-metrica.herokuapp.com'
 
@@ -98,6 +102,20 @@ class UsersUpdateView(LoginRequiredMixin, UpdateView):
             messages.error(request, self.perm_denied_msg)
             return HttpResponseRedirect(reverse_lazy('users:users_index'))
         return super().dispatch(request, *args, **kwargs)
+
+
+def feedback_view(request):
+    if request.method == "POST":
+        form = FeedbackForm(request.POST)
+        if form.is_valid():
+            send_mail(form.cleaned_data['subject'], form.cleaned_data['content'], from_email=None, recipient_list=[os.getenv('DEFAULT_FROM_EMAIL'),])
+            messages.info(request, 'Письмо отправлено')
+            HttpResponseRedirect(reverse_lazy('users:users_index'))
+        else:
+            messages.error(request, 'Невалидная форма')
+            HttpResponse(reverse_lazy('users:users_index'))
+    form = FeedbackForm()
+    return render(request, 'feedback.html', {'form': form})
 
 
 def invite_to_register(request):
