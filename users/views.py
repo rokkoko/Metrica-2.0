@@ -1,3 +1,4 @@
+import os
 from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
 from django.http import HttpResponse, HttpResponseRedirect
@@ -14,6 +15,7 @@ import json
 from django.core import serializers
 from django.core.mail import send_mail
 from django.contrib import messages
+from dotenv import load_dotenv, find_dotenv
 
 URL_PATH = 'https://mysterious-reef-49447.herokuapp.com'
 
@@ -91,7 +93,7 @@ def feedback_view(request):
     if request.method == "POST":
         form = FeedbackForm(request.POST)
         if form.is_valid():
-            send_mail(form.cleaned_data['subject'], form.cleaned_data['content'], from_email='', recipient_list=['py.egor.py@gmail.com',])
+            send_mail(form.cleaned_data['subject'], form.cleaned_data['content'], from_email=None, recipient_list=[os.getenv('DEFAULT_FROM_EMAIL'),])
             messages.info(request, 'Письмо отправлено')
             HttpResponseRedirect(reverse_lazy('users:users_index'))
         else:
