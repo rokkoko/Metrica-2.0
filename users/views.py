@@ -7,8 +7,11 @@ from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import CustomUser
+from games.models import Games, GameScores, GameSession
 from .forms import CustomUserCreationForm, CustomUserUpdateForm, FeedbackForm
+from django.contrib import messages
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from users.db_actions import add_user_into_db_simple
 import json
@@ -17,7 +20,7 @@ from django.core.mail import send_mail
 from django.contrib import messages
 from dotenv import load_dotenv, find_dotenv
 
-URL_PATH = 'https://mysterious-reef-49447.herokuapp.com'
+URL_PATH = 'https://a-metrica.herokuapp.com'
 
 
 class UsersLoginView(LoginView):
@@ -50,7 +53,7 @@ class UsersListView(ListView):
     #     return queryset
 
 
-class UsersDetailView(DetailView):
+class UsersDetailView(LoginRequiredMixin, DetailView):
     model = CustomUser
     template_name = 'users_detail.html'
 
@@ -73,20 +76,32 @@ class UsersDetailView(DetailView):
                 'Email'
             )
         )
+
+        context["last_five_games_played"] = Games.objects.distinct().filter(
+            sessions__scores__user__id=self.kwargs['pk']
+        )
+
         return context
 
 
-class UsersCreateView(CreateView):
+class UsersCreateView(LoginRequiredMixin, CreateView):
     model = CustomUser
     form_class = CustomUserCreationForm
     template_name = 'user_register.html'
 
 
-class UsersUpdateView(UpdateView):
+class UsersUpdateView(LoginRequiredMixin, UpdateView):
     model = CustomUser
     form_class = CustomUserUpdateForm
     template_name = 'user_update.html'
     success_url = reverse_lazy('users:users_index')
+    perm_denied_msg = 'Permission denied. Only owner can change account'
+
+    def dispatch(self, request, *args, **kwargs):
+        if self.kwargs['pk'] != request.user.pk:
+            messages.error(request, self.perm_denied_msg)
+            return HttpResponseRedirect(reverse_lazy('users:users_index'))
+        return super().dispatch(request, *args, **kwargs)
 
 
 def feedback_view(request):

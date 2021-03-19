@@ -28,9 +28,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('DJANGO_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
+DEBUG = bool(os.getenv('DEBUG_MODE'))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'a-metrica.herokuapp.com',
+    '127.0.0.1',
+]
 
 
 # Application definition
@@ -46,11 +50,13 @@ INSTALLED_APPS = [
     'users',
     'games',
     'bootstrap4',
+    'anymail',
 ]
 
 MIDDLEWARE = [
     'rollbar.contrib.django.middleware.RollbarNotifierMiddlewareOnly404',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -98,11 +104,15 @@ WSGI_APPLICATION = 'Metrica_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': '',
+        'NAME': os.getenv('DB_NAME_HEROKU'),
+        'USER': os.getenv('DB_USER_HEROKU'),
+        'PASSWORD': os.getenv('DB_PASSWORD_HEROKU'),
+        'HOST': os.getenv('DB_HOST_HEROKU'),
         'PORT': '5432',
+        'TEST': {
+            'NAME': os.getenv('TEST_DB'),
+            'USER': os.getenv('DB_USER')
+        }
     }
 }
 # if testing (sys.argv contain 'test') db settings set to
@@ -161,10 +171,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-EMAIL_HOST = os.getenv("EMAIL_HOST")
-EMAIL_PORT = 465
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.getenv("MAIL_PASSWORD")
-EMAIL_USE_SSL = True
-DEFAULT_FROM_EMAIL = ''  # from_email in send_mail()
+ANYMAIL = {
+    # (exact settings here depend on your ESP...)
+    "MAILGUN_API_KEY": os.getenv('MAILGUN_API_KEY'),
+    "MAILGUN_SENDER_DOMAIN": os.getenv('MAILGUN_DOMAIN'),  # your Mailgun domain, if needed
+}
+EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"  # or sendgrid.EmailBackend, or...
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')  # if you don't already have this in settings
+SERVER_EMAIL = os.getenv('SERVER_EMAIL')  # ditto (default from-email for Django errors)
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
