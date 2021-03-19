@@ -109,6 +109,10 @@ DATABASES = {
         'PASSWORD': os.getenv('DB_PASSWORD_HEROKU'),
         'HOST': os.getenv('DB_HOST_HEROKU'),
         'PORT': '5432',
+        'TEST': {
+            'NAME': os.getenv('TEST_DB'),
+            'USER': os.getenv('DB_USER')
+        }
     }
 }
 # if testing (sys.argv contain 'test') db settings set to
@@ -179,3 +183,4 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')  # if you don't already hav
 SERVER_EMAIL = os.getenv('SERVER_EMAIL')  # ditto (default from-email for Django errors)
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
