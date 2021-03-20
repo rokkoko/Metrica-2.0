@@ -108,7 +108,8 @@ def feedback_view(request):
     if request.method == "POST":
         form = FeedbackForm(request.POST)
         if form.is_valid():
-            send_mail(form.cleaned_data['subject'], form.cleaned_data['content'], from_email=None, recipient_list=[os.getenv('DEFAULT_FROM_EMAIL'),])
+            send_mail(form.cleaned_data['subject'], form.cleaned_data['content'], from_email=None,
+                      recipient_list=[os.getenv('DEFAULT_FROM_EMAIL'), ])
             messages.info(request, 'Письмо отправлено')
             HttpResponseRedirect(reverse_lazy('users:users_index'))
         else:
