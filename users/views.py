@@ -8,7 +8,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import CustomUser
+import users.models
 from games.models import Games, GameScores, GameSession
 from .forms import CustomUserCreationForm, CustomUserUpdateForm, FeedbackForm
 from django.contrib import messages
@@ -34,7 +34,7 @@ class UsersLogoutView(LogoutView):
 
 
 class UsersListView(ListView):
-    model = CustomUser
+    model = users.models.CustomUser
     template_name = 'users_index.html'
     context_object_name = 'users_list'
 
@@ -54,7 +54,7 @@ class UsersListView(ListView):
 
 
 class UsersDetailView(LoginRequiredMixin, DetailView):
-    model = CustomUser
+    model = users.models.CustomUser
     template_name = 'users_detail.html'
 
     def get_context_data(self, **kwargs):
@@ -68,7 +68,7 @@ class UsersDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context['json'] = serializers.serialize(
             'json',
-            CustomUser.objects.filter(pk=self.kwargs['pk']),
+            users.models.CustomUser.objects.filter(pk=self.kwargs['pk']),
             fields=(
                 'username',
                 'first_name',
@@ -85,13 +85,13 @@ class UsersDetailView(LoginRequiredMixin, DetailView):
 
 
 class UsersCreateView(LoginRequiredMixin, CreateView):
-    model = CustomUser
+    model = users.models.CustomUser
     form_class = CustomUserCreationForm
     template_name = 'user_register.html'
 
 
 class UsersUpdateView(LoginRequiredMixin, UpdateView):
-    model = CustomUser
+    model = users.models.CustomUser
     form_class = CustomUserUpdateForm
     template_name = 'user_update.html'
     success_url = reverse_lazy('users:users_index')
@@ -105,6 +105,11 @@ class UsersUpdateView(LoginRequiredMixin, UpdateView):
 
 
 def feedback_view(request):
+    """
+    Takes claim from "contact_us" page and send email with text to admin
+    :param request:
+    :return:
+    """
     if request.method == "POST":
         form = FeedbackForm(request.POST)
         if form.is_valid():
@@ -117,6 +122,19 @@ def feedback_view(request):
             HttpResponse(reverse_lazy('users:users_index'))
     form = FeedbackForm()
     return render(request, 'feedback.html', {'form': form})
+
+
+class ClaimCreateView(LoginRequiredMixin, CreateView):
+    model = users.models.Claim
+    fields = [
+        "topic",
+        "claim",
+    ]
+    template_name = 'feedback.html'
+
+    def form_valid(self, form):
+        form.instance.claimer = self.request.user
+        return super().form_valid(form)
 
 
 def invite_to_register(request):

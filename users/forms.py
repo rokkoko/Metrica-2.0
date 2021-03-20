@@ -24,7 +24,8 @@ class CustomUserUpdateForm(UserCreationForm):
             'email',
         ]
 
-
 class FeedbackForm(forms.Form):
-    subject = forms.CharField(label="Тема обращения", widget=forms.TextInput)
+    # subject = forms.CharField(label="Тема обращения", widget=forms.TextInput)
+    subject = forms.ChoiceField()
     content = forms.CharField(label="Текст обращения", widget=forms.Textarea)
+    email = forms.EmailField()
