@@ -4,37 +4,36 @@
 {% block content %}
     {% bootstrap_messages %}
 
-    {% if user.is_authenticated %}
-        <div>
-            Current user:
-            <a href="{% url 'users:users_detail' user.pk %}">{{ user }}</a>
+    <div class="row mb-3">
+        <div class="col">
+            <h4>
+                <a href={% url 'users:users_index' %}>Users</a>
+            </h4>
         </div>
-    {% endif %}
+    </div>
 
-    <p><a href="{% url 'users:login' %}">Login</a></p>
-    <p><a href="{% url 'users:logout' %}">Logout</a></p>
-
-    <h2>Users</h2>
-    <div class="table-responsive">
-        <table>
-            <thead>
-            <tr>
-                <th>User ID</th>
-                <th>Nickname</th>
-                <th>Name</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for user in users_list %}
+    <div class="row">
+        <div class="col">
+            <table class="table table-borderless">
+                <thead>
                 <tr>
-                    <td>{{ user.id }}</td>
-                    <td>
-                        <a href={% url 'users:users_detail' user.pk %}>{{ user.username }}</a>
-                    </td>
-                    <td>{{ user }}</td>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Email</th>
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                {% for user in users_list %}
+                    <tr>
+                        <th scope="row">{{ user.id }}</th>
+                        <td>
+                            <a href={% url 'users:users_detail' user.pk %}>{{ user.username }}</a>
+                        </td>
+                        <td>{{ user.email }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 {% endblock %}
