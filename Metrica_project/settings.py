@@ -49,9 +49,11 @@ INSTALLED_APPS = [
     'games',
     'bootstrap4',
     'anymail',
+    'debug_toolbar'
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'rollbar.contrib.django.middleware.RollbarNotifierMiddlewareOnly404',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -178,3 +180,8 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')  # if you don't already hav
 SERVER_EMAIL = os.getenv('SERVER_EMAIL')  # ditto (default from-email for Django errors)
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Debug toolbar will be available for requests from this IPs
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
