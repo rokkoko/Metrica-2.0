@@ -1,24 +1,24 @@
-{% load bootstrap4 %}
+{% extends "base.html" %}
 
-<body class="text-center">
-<table border="2" align="center" class="row h-auto mb-4" cellpadding="7">
-	<tr>
-		<th>User ID</th>
-		<th>Nickname </th>
-		<th>Name</th>
-		<th>E-mail</th>
-		<th>Last 5 games played</th>
-	</tr>
-		<tr>
-			<td>{{ object.id }}</td>
-			<td>{{ object.username }}</td>
-			<td>{{ object }}</td>
-			<td>{{ object.email }}</td>
-			<td>
-				{% for game in last_five_games_played %}
-					<a href={% url 'games:games_detail' game.pk %}>{{ game }}</a>
-				{% endfor %}
-			</td>
-		</tr>
-</table>
-</body>
+{% block content %}
+    <table>
+        <tr>
+            <th>User ID</th>
+            <th>Nickname</th>
+            <th>Name</th>
+            <th>E-mail</th>
+            <th>Last 5 games played</th>
+        </tr>
+        <tr>
+            <td>{{ object.id }}</td>
+            <td>{{ object.username }}</td>
+            <td>{{ object }}</td>
+            <td>{{ object.email }}</td>
+            <td>
+                {% for game in last_five_games_played %}
+                    <a href={% url 'games:games_detail' game.pk %}>{{ game }}</a>
+                {% endfor %}
+            </td>
+        </tr>
+    </table>
+{% endblock %}

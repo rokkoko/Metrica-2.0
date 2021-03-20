@@ -1,9 +1,10 @@
+{% extends "base.html" %}
 {% load bootstrap4 %}
 
-<body class="text-center">
-<form action={% url 'users:feedback' %} method="post">
-	{% csrf_token %}
-	{% bootstrap_form form %}
-	<input class="btn btn-primary" type="submit" value='Send'>
-</form>
-</body>
+{% block content %}
+    <form action={% url 'users:feedback' %} method="post">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <input class="btn btn-primary" type="submit" value='Send'>
+    </form>
+{% endblock %}
