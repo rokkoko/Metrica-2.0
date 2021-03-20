@@ -18,6 +18,25 @@
 </head>
 
 <body>
-{% block content %}{% endblock %}
+<div class="container">
+    {% block header %}
+        <div class="row align-items-center my-5">
+            <div class="col">
+                <h1><a href="/">Metrica</a></h1>
+            </div>
+            <div class="col-auto">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'users:users_detail' user.pk %}">{{ user.email }}</a> | <a
+                        href="{% url 'users:logout' %}">Logout</a>
+                {% else %}
+                    <a href="{% url 'users:login' %}">Login</a>
+                {% endif %}
+                | <a href={% url 'users:feedback' %}>Contact</a>
+            </div>
+        </div>
+    {% endblock %}
+
+    {% block content %}{% endblock %}
+</div>
 </body>
 </html>

@@ -1,26 +1,44 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <table>
+    <div class="row mb-3">
+        <div class="col">
+            <h4>
+                <a href={% url 'games:games_index' %}>Games</a> / {{ game.id }}
+            </h4>
+        </div>
+    </div>
+
+    <table class="table table-borderless">
+        <thead>
         <tr>
-            <th>Game ID</th>
-            <th>Name</th>
-            <th>Players</th>
-            <th>Summary</th>
+            <th scope="col">#</th>
+            <th scope="col">Game</th>
+            <th scope="col">Players</th>
+            <th scope="col">Summary</th>
         </tr>
+        </thead>
+        <tbody>
         <tr>
-            <td>{{ game.id }}</td>
-            <td>{{ game.name }}</td>
+            <th scope="row">{{ game.id }}</th>
             <td>
-                {% for player in users %}
-                    <p>{{ player.username }}</p>
-                {% endfor %}
+                {{ game.name }}
             </td>
             <td>
-                {% for item in scores.values %}
-                    <p>{{ item }}</p>
-                {% endfor %}
+                <ul class="list-unstyled">
+                    {% for player in users %}
+                        <li>{{ session }}</li>
+                    {% endfor %}
+                </ul>
             </td>
-        <tr></tr>
+            <td>
+                <ul>
+                    {% for item in scores.values %}
+                        <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            </td>
+        </tr>
+        </tbody>
     </table>
 {% endblock %}
