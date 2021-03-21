@@ -22,7 +22,7 @@
     {% block header %}
         <div class="row align-items-center my-5">
             <div class="col">
-                <h1><a href="/">Metrica</a></h1>
+                <h1><a href={% url "index" %}>Metrica</a></h1>
             </div>
             <div class="col-auto">
                 {% if user.is_authenticated %}
