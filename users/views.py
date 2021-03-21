@@ -84,7 +84,7 @@ class UsersDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-class UsersCreateView(LoginRequiredMixin, CreateView):
+class UsersCreateView(CreateView):
     model = users.models.CustomUser
     form_class = CustomUserCreationForm
     template_name = 'user_register.html'

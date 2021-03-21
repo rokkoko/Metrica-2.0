@@ -106,7 +106,7 @@ def stats_repr(game):
     game_object = get_game_object_by_id(game_id)
     if not game_id:
         return f'В игру "{game}" Вы еще не играли. Статистика отсутствует.'
-    users_ids = [i.id for i in CustomUser.objects.filter(gamescores__game_session__game=game_object).distinct()]
+    users_ids = [i.id for i in CustomUser.objects.filter(scores__game_session__game=game_object).distinct()]
     result_msg_dict = dict()
     for user_id in users_ids:
         user = get_user_object_by_id(user_id)
