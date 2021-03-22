@@ -4,7 +4,7 @@
     <div class="row mb-3">
         <div class="col">
             <h4>
-                <a href={% url 'games:games_index' %}>Games</a> / {{ game.id }}
+                <a href={% url 'games:games_index' %}>Games</a> / {{ game.name }}
             </h4>
         </div>
     </div>
@@ -27,7 +27,7 @@
             <td>
                 <ul class="list-unstyled">
                     {% for player in users %}
-                        <li>{{ session }}</li>
+                        <li>{{ player }}</li>
                     {% endfor %}
                 </ul>
             </td>

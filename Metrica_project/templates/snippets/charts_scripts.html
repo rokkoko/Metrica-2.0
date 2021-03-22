@@ -1,6 +1,10 @@
 {% load static %}
 
-<canvas id="myChart" width="400" height="400"></canvas>
+<div class="row">
+    <div class="col">
+        <canvas id="myChart" width="400" height="400"></canvas>
+    </div>
+</div>
 
 {{ serverData|json_script:"serverData" }}
 
