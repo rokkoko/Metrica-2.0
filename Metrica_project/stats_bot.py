@@ -2,22 +2,7 @@ import datetime as date
 from games.db_actions import stats_repr, add_scores, get_game_names_list, get_game_id_by_name
 from .income_msg_parser import parse_message
 from telegram import Bot, Update, ForceReply
-from telegram.ext import Dispatcher, CommandHandler, CallbackContext, MessageHandler, Filters, UpdateFilter
-
-
-class ScoresMessageFilter(UpdateFilter):
-    def filter(self, update):
-        return ':' in update.message.text
-
-
-class KnownStatsMessageFilter(UpdateFilter):
-    def filter(self, update):
-        game = parse_message(update.message.text)
-        return True if get_game_id_by_name(game) else False
-
-
-activity_scores_message_filter = ScoresMessageFilter()
-known_activity_message_filter = KnownStatsMessageFilter()
+from telegram.ext import Dispatcher, CommandHandler, MessageHandler, Filters
 
 
 class StatsBot:
@@ -27,13 +12,7 @@ class StatsBot:
         self.dispatcher.add_handler(CommandHandler("add", add_stats_command))
         self.dispatcher.add_handler(CommandHandler("show", show_stats_command))
         self.dispatcher.add_handler(
-            MessageHandler(activity_scores_message_filter & ~Filters.command, process_add_stats_message))
-        self.dispatcher.add_handler(
-            MessageHandler(known_activity_message_filter & ~activity_scores_message_filter & ~Filters.command,
-                           process_show_stats_message))
-        self.dispatcher.add_handler(
-            MessageHandler(~known_activity_message_filter & ~activity_scores_message_filter & ~Filters.command,
-                           process_unknown_message))
+            MessageHandler(~Filters.command, process_bot_reply_message))
 
     def process_update(self, request):
         update = Update.de_json(request, self.bot)
@@ -43,12 +22,16 @@ class StatsBot:
 
 
 def add_stats_command(update, context):
+    # Store the command in context to check later in message processors
+    context.user_data["last_command"] = "ADD"
     update.message.reply_text(
         f'Добавить статы для активности (уже зарегистрированные: {", ".join(get_game_names_list())})',
         reply_markup=ForceReply(selective=True))
 
 
 def show_stats_command(update, context):
+    # Store the command in context to check later in message processors
+    context.user_data["last_command"] = "SHOW"
     update.message.reply_text(
         f'Показать статы для активности (уже зарегистрированные: {", ".join(get_game_names_list())})',
         reply_markup=ForceReply(selective=True))
@@ -56,6 +39,34 @@ def show_stats_command(update, context):
 
 def process_unknown_message(update, context):
     update.message.reply_text('В эту игру вы еще не шпилили')
+
+
+def process_wrong_message(update, context):
+    update.message.reply_text('Не получилось обработать запрос')
+
+
+def is_scores_message(update):
+    return ':' in update.message.text
+
+
+def is_known_activity_message(update):
+    game = parse_message(update.message.text)
+    return True if get_game_id_by_name(game) else False
+
+
+def process_bot_reply_message(update, context):
+    last_command = context.user_data["last_command"]
+
+    if last_command == 'ADD' and is_scores_message(update):
+        process_add_stats_message(update, context)
+    elif last_command == 'SHOW':
+        if is_scores_message(update):
+            process_wrong_message(update, context)
+
+        elif is_known_activity_message(update):
+            process_show_stats_message(update, context)
+        else:
+            process_unknown_message(update, context)
 
 
 def process_show_stats_message(update, context):
@@ -74,7 +85,7 @@ def process_show_stats_message(update, context):
     update.message.reply_text(result_msg)
 
 
-def process_add_stats_message(update: Update, context: CallbackContext):
+def process_add_stats_message(update, context):
     data = update.message.text
     game, score_pairs = parse_message(data)
     result_dict = add_scores(game, score_pairs)
