@@ -13,6 +13,6 @@ urlpatterns = [
     path('add_user/', views.add_user_view, name='add_user_from_bot'),
 
     path('invite_to_register/', views.invite_to_register, name='invite_to_register'),
-    path('send_email_to_admin/', views.feedback_view, name='feedback'),
+    path('send_email_to_admin/', views.feedback_view, name='feedback_to_email'),
     path('contact_us/', views.ClaimCreateView.as_view(), name='feedback'),
 ]
