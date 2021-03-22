@@ -1,1 +1,0 @@
-const serverData = JSON.parse(document.getElementById('serverData').textContent);

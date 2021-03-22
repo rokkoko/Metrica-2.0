@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
     <div class="row mb-3">
@@ -8,6 +9,25 @@
             </h4>
         </div>
     </div>
+
+    <div class="row">
+        <div class="col">
+            {% comment %}
+            This is the element where chart is rendered. We select it in games_details_chart.js script by id
+            {% endcomment %}
+            <canvas id="gamesDetailsChart"></canvas>
+        </div>
+    </div>
+
+    {% comment %}
+    First put `server_data` in page body as a JSON script (for security reasons).
+    Then put `safe_server_data_getter`, which will read `server_data` to Javascript runtime
+    Then load chart, which use the `server_data` in Javascript context. Order of scripts matter - we first put the
+    data on page and then script read it to memory, and then chart use it.
+    {% endcomment %}
+    {{ server_data | json_script:"server_data" }}
+    <script src="{% static 'js/safe_server_data_getter.js' %}"></script>
+    <script src="{% static 'js/games_details_chart.js' %}"></script>
 
     <table class="table table-borderless">
         <thead>
