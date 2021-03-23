@@ -14,13 +14,11 @@ from Metrica_project.stats_bot import StatsBot
 from django.db.models import Sum
 
 stats_bot_token = os.getenv("STATS_BOT_TOKEN_TEST")
+stats_bot = StatsBot(stats_bot_token)
 
 
 @csrf_exempt
 def stats_proceed_view(request):
-    stats_bot = StatsBot(stats_bot_token)
-
-    # LOGIC
     request_json = json.loads(request.body)
     stats_bot.process_update(request_json)
 
