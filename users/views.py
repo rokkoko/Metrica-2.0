@@ -150,7 +150,7 @@ def invite_to_register(request):
 
 
 # disable csrf protection for testing via Postman by using decorator
-# @csrf_exempt
+@csrf_exempt
 def add_user_view(request):
     if request.method == 'POST':
         request_raw = request.body
@@ -162,8 +162,18 @@ def add_user_view(request):
         user = request.GET.get('user')
         new_user_pk = add_user_into_db_simple(user)
 
+    # Another realization:
     # Return redirect to update_view for created user (in browser)
     # return HttpResponseRedirect(reverse('users:users_update', args=[new_user_pk]))
 
     # Return text of link for tg_bot to update user account page
-    return HttpResponse(URL_PATH + str(reverse_lazy('users:users_update', args=[new_user_pk])))
+    # !!Need to add token into link!!
+    return HttpResponse(
+        URL_PATH + str(
+            reverse_lazy(
+                'users:reg_cont', args=[new_user_pk]
+            )
+        )
+    ) if new_user_pk else HttpResponse(
+        f"Вы уже зарегистрированы. Можете перейти на сайт по этой ссылке {request.build_absolute_uri(reverse_lazy('index'))}"
+    )
