@@ -3,7 +3,8 @@ from games.db_actions import stats_repr, add_scores, get_game_names_list, get_ga
 from .income_msg_parser import parse_message
 from telegram import Bot, Update, ForceReply
 from telegram.ext import Dispatcher, CommandHandler, MessageHandler, Filters
-
+import requests
+from django.urls import reverse_lazy
 
 class StatsBot:
     def __init__(self, token):
@@ -11,6 +12,7 @@ class StatsBot:
         self.dispatcher = Dispatcher(self.bot, None, workers=0)
         self.dispatcher.add_handler(CommandHandler("add", add_stats_command))
         self.dispatcher.add_handler(CommandHandler("show", show_stats_command))
+        self.dispatcher.add_handler(CommandHandler("register", register_user_command))
         self.dispatcher.add_handler(
             MessageHandler(~Filters.command, process_bot_reply_message))
 
@@ -20,6 +22,20 @@ class StatsBot:
         self.dispatcher.process_update(update)
         print('Stats request processed successfully', update.update_id)
 
+#----------------------------------------------------------------------------------------------------------------------
+
+def register_user_command(update, context):
+    # Store the command in context to check later in message processors
+    context.user_data["last_command"] = "REGISTER"
+    update.message.reply_text(
+        f'Зарегистрировать юзера',
+        reply_markup=ForceReply())
+
+def register_command(update, context, request, func):
+    user = update.message.text
+    response = requests.post('https://47e356789dec.ngrok.io/users/add_user/', json={"user": str(user)})
+    update.message.reply_text(response.text)
+#----------------------------------------------------------------------------------------------------------------------
 
 def add_stats_command(update, context):
     # Store the command in context to check later in message processors
@@ -67,6 +83,8 @@ def process_bot_reply_message(update, context):
             process_show_stats_message(update, context)
         else:
             process_unknown_message(update, context)
+    elif last_command == 'REGISTER':
+        register_command(update, context)
 
 
 def process_show_stats_message(update, context):
