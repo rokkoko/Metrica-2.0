@@ -1,5 +1,6 @@
 from django.urls import path
 from users import views
+import uuid
 
 app_name = 'users'
 
@@ -14,7 +15,7 @@ urlpatterns = [
 
     # create and update user profile by tg link
     path('add_user/', views.add_user_view, name='add_user_from_bot'),
-    path('reg_cont/<int:pk>/', views.UserUpdateViewFromBot.as_view(), name='reg_cont'),
+    path('reg_cont/<int:pk>/' + str(uuid.uuid4()), views.UserUpdateViewFromBot.as_view(), name='reg_cont'),
 
 
     path('invite_to_register/', views.invite_to_register, name='invite_to_register'),
