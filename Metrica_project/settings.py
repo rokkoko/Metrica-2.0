@@ -76,7 +76,7 @@ ROLLBAR = {
 ROOT_URLCONF = 'Metrica_project.urls'
 
 LOGIN_URL = 'users:login'
-LOGIN_REDIRECT_URL = 'users:users_index'
+# LOGIN_REDIRECT_URL = 'users:users_index'
 LOGOUT_REDIRECT_URL = 'users:users_index'
 
 TEMPLATES = [

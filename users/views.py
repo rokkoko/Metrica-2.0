@@ -27,6 +27,14 @@ class UsersLoginView(LoginView):
     success_message = '%(username)s was successfully login'
     template_name = 'log_in_out.html'
 
+    def get_success_url(self):
+        """
+        Override classmethod to achieve redirect to profile page in buil-in auth CBV
+        :return:
+        """
+        url = reverse_lazy('users:users_detail', args=[self.request.user.id,])
+        return url
+
 
 class UsersLogoutView(LogoutView):
     success_message = '%(username)s was successfully logout'
@@ -104,6 +112,58 @@ class UsersUpdateView(LoginRequiredMixin, UpdateView):
         return super().dispatch(request, *args, **kwargs)
 
 
+def invite_to_register(request):
+    """
+    DRAFT
+    :param request:
+    :return:    str()__link for user update IF user already login (useless for REST with tg_bot)
+                OR redirect to registration page (form)
+    """
+    if request.user.id:
+        return HttpResponse(URL_PATH + str(reverse_lazy('users:users_update', args=[request.user.id])))
+    return HttpResponseRedirect(reverse_lazy('users:users_register'))
+
+
+# disable csrf protection for testing via Postman by using decorator
+@csrf_exempt
+def add_user_view(request):
+    if request.method == 'POST':
+        request_raw = request.body
+        request_json = json.loads(request_raw)
+        user = request_json['user']
+        new_user_pk = add_user_into_db_simple(user)
+
+    if request.method == 'GET':
+        user = request.GET.get('user')
+        new_user_pk = add_user_into_db_simple(user)
+
+    # Another realization:
+    # Return redirect to update_view for created user (in browser)
+    # return HttpResponseRedirect(reverse('users:users_update', args=[new_user_pk]))
+
+    # Return text of link for tg_bot to update user account page
+    # !!Need to add token into link!!
+    return HttpResponse(
+        URL_PATH + str(
+            reverse_lazy(
+                'users:reg_cont', args=[new_user_pk]
+            )
+        )
+    ) if new_user_pk else HttpResponse(
+        f"Вы уже зарегистрированы. Можете перейти на сайт по этой ссылке {request.build_absolute_uri(reverse_lazy('index'))}"
+    )
+
+
+class UserUpdateViewFromBot(UpdateView):
+    """
+    Class view without @login_required and permissions check for "registration-through-bot" process
+    """
+    model = users.models.CustomUser
+    form_class = CustomUserUpdateForm
+    template_name = 'user_update_from_bot.html'
+    success_url = reverse_lazy('index')
+
+
 def feedback_view(request):
     """
     Takes claim from "contact_us" page and send email with text to admin
@@ -135,35 +195,3 @@ class ClaimCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.claimer = self.request.user
         return super().form_valid(form)
-
-
-def invite_to_register(request):
-    """
-    DRAFT
-    :param request:
-    :return:    str()__link for user update IF user already login (useless for REST with tg_bot)
-                OR redirect to registration page (form)
-    """
-    if request.user.id:
-        return HttpResponse(URL_PATH + str(reverse_lazy('users:users_update', args=[request.user.id])))
-    return HttpResponseRedirect(reverse_lazy('users:users_register'))
-
-
-# disable csrf protection for testing via Postman by using decorator
-# @csrf_exempt
-def add_user_view(request):
-    if request.method == 'POST':
-        request_raw = request.body
-        request_json = json.loads(request_raw)
-        user = request_json['user']
-        new_user_pk = add_user_into_db_simple(user)
-
-    if request.method == 'GET':
-        user = request.GET.get('user')
-        new_user_pk = add_user_into_db_simple(user)
-
-    # Return redirect to update_view for created user (in browser)
-    # return HttpResponseRedirect(reverse('users:users_update', args=[new_user_pk]))
-
-    # Return text of link for tg_bot to update user account page
-    return HttpResponse(URL_PATH + str(reverse_lazy('users:users_update', args=[new_user_pk])))
