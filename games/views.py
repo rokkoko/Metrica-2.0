@@ -1,6 +1,7 @@
 import os
 import json
 from games.models import Games, GameSession, GameScores
+from games.forms import GameCreationForm
 from users.models import CustomUser
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
@@ -56,3 +57,9 @@ class GamesListView(ListView):
     model = Games
     template_name = 'games_index.html'
     context_object_name = 'games'
+
+
+class GamesAddView(CreateView):
+    model = Games
+    form_class = GameCreationForm
+    template_name = 'add_game.html'

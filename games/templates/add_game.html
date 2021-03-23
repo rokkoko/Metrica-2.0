@@ -2,11 +2,11 @@
 {% load bootstrap4 %}
 
 {% block content %}
-    <form method="POST" enctype="multipart/form-data" action="{% url 'users:users_update' object.id %}">
+    <form method="POST" enctype="multipart/form-data" action="{% url 'games:add_game' %}">
         {% csrf_token %}
         {% bootstrap_form form %}
         <div class="form-group">
-            <input class="btn btn-primary" type="submit" value='Update'>
+            <input class="btn btn-primary" type="submit" value='Add game'>
         </div>
     </form>
 {% endblock %}

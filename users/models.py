@@ -5,6 +5,8 @@ import datetime
 
 
 class CustomUser(AbstractUser):
+    avatar = models.ImageField(upload_to='uploads/%Y/%m/%d/', null=True)
+
     class Meta():
         ordering = ["username"]
 
@@ -13,6 +15,7 @@ class CustomUser(AbstractUser):
 
     def get_absolute_url(self):
         return '/users/'
+
 
 
 class ClaimTopic(models.Model):
@@ -49,6 +52,11 @@ class Claim(models.Model):
         :param kwargs:
         :return:
         """
+        # NOT covered in tests
         super().save(*args, **kwargs)
         self.answer_date_expiration = models.F('created_at') + datetime.timedelta(days=14)
         super().save(*args, **kwargs)
+
+        # KISS and covered in tests
+        # self.answer_date_expiration = datetime.datetime.now() + datetime.timedelta(days=14)
+        # super().save(*args, **kwargs)

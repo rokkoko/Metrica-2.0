@@ -33,6 +33,7 @@ DEBUG = bool(os.getenv('DEBUG_MODE'))
 ALLOWED_HOSTS = [
     'a-metrica.herokuapp.com',
     '127.0.0.1',
+    'testserver',
 ]
 
 # Application definition
@@ -76,7 +77,7 @@ ROLLBAR = {
 ROOT_URLCONF = 'Metrica_project.urls'
 
 LOGIN_URL = 'users:login'
-LOGIN_REDIRECT_URL = 'users:users_index'
+# LOGIN_REDIRECT_URL = 'users:users_index'
 LOGOUT_REDIRECT_URL = 'users:users_index'
 
 TEMPLATES = [
@@ -169,6 +170,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 ANYMAIL = {
     # (exact settings here depend on your ESP...)

@@ -1,9 +1,10 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import CustomUser
 
 
 class CustomUserCreationForm(UserCreationForm):
+
     class Meta(UserCreationForm):
         model = CustomUser
         fields = [
@@ -11,21 +12,23 @@ class CustomUserCreationForm(UserCreationForm):
             'first_name',
             'last_name',
             'email',
+            'avatar',
         ]
 
 
-class CustomUserUpdateForm(UserCreationForm):
-    class Meta(UserCreationForm):
+
+class CustomUserUpdateForm(UserChangeForm):
+    class Meta:
         model = CustomUser
         fields = [
             'username',
             'first_name',
             'last_name',
             'email',
+            'avatar',
         ]
 
 class FeedbackForm(forms.Form):
-    # subject = forms.CharField(label="Тема обращения", widget=forms.TextInput)
     subject = forms.ChoiceField()
     content = forms.CharField(label="Текст обращения", widget=forms.Textarea)
     email = forms.EmailField()

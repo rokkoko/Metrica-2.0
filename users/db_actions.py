@@ -40,6 +40,7 @@ def add_user_into_db_simple(username):
     print(f'User "{username}" already in db. Welcome back!')
     return
 
+
 def add_user_into_db_from_score_pairs(score_pairs: dict):
     '''
     :param score_pairs: dict {"username": score:int}
