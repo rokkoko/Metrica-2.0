@@ -49,6 +49,11 @@ class Claim(models.Model):
         :param kwargs:
         :return:
         """
+        # NOT covered in tests
         super().save(*args, **kwargs)
         self.answer_date_expiration = models.F('created_at') + datetime.timedelta(days=14)
         super().save(*args, **kwargs)
+
+        # KISS and covered in tests
+        # self.answer_date_expiration = datetime.datetime.now() + datetime.timedelta(days=14)
+        # super().save(*args, **kwargs)
