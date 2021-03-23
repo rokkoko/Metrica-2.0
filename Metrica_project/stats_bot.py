@@ -4,7 +4,9 @@ from .income_msg_parser import parse_message
 from telegram import Bot, Update, ForceReply
 from telegram.ext import Dispatcher, CommandHandler, MessageHandler, Filters
 import requests
-from django.urls import reverse_lazy
+
+
+REGISTRATION_URL = 'https://d62d53c99f46.ngrok.io/users/add_user/'
 
 class StatsBot:
     def __init__(self, token):
@@ -22,7 +24,6 @@ class StatsBot:
         self.dispatcher.process_update(update)
         print('Stats request processed successfully', update.update_id)
 
-#----------------------------------------------------------------------------------------------------------------------
 
 def register_user_command(update, context):
     # Store the command in context to check later in message processors
@@ -31,11 +32,10 @@ def register_user_command(update, context):
         f'Зарегистрировать юзера',
         reply_markup=ForceReply())
 
-def register_command(update, context, request, func):
+def register_command(update, context):
     user = update.message.text
-    response = requests.post('https://47e356789dec.ngrok.io/users/add_user/', json={"user": str(user)})
+    response = requests.post(REGISTRATION_URL, json={"user": str(user)})
     update.message.reply_text(response.text)
-#----------------------------------------------------------------------------------------------------------------------
 
 def add_stats_command(update, context):
     # Store the command in context to check later in message processors
