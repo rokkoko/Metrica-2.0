@@ -5,6 +5,8 @@ import datetime
 
 
 class CustomUser(AbstractUser):
+    avatar = models.ImageField(upload_to='uploads/%Y/%m/%d/', null=True)
+
     class Meta():
         ordering = ["username"]
 
@@ -13,6 +15,7 @@ class CustomUser(AbstractUser):
 
     def get_absolute_url(self):
         return '/users/'
+
 
 
 class ClaimTopic(models.Model):
