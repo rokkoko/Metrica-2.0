@@ -9,6 +9,22 @@
         </div>
     </div>
 
+    <div class="card-columns">
+        {% for game in games %}
+            <div class="card">
+                {% if game.cover_art and game.cover_art.url %}
+                    <img src="{{ game.cover_art.url }}" class="card-img-top" alt="...">
+                {% else %}
+                    <img src="https://source.unsplash.com/random/400x300" class="card-img-top" alt="...">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title"><a href={% url 'games:games_detail' game.pk %}>{{ game.name }}</a></h5>
+                    <p class="card-text"><small class="text-muted">Последний раз играл 3 часа назад</small></p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
     <div class="row">
         <div class="col">
             <table class="table table-borderless">
