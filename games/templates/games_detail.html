@@ -19,6 +19,13 @@
         </div>
     </div>
 
+    <div class="card" style="width: 18rem;">
+        <img src="{{ game.cover_art.url }}" class="card-img-top" alt="...">
+        <div class="card-body">
+            <h5 class="card-title">{{ game.name }}</h5>
+        </div>
+    </div>
+
     {% comment %}
     First put `server_data` in page body as a JSON script (for security reasons).
     Then put `safe_server_data_getter`, which will read `server_data` to Javascript runtime
