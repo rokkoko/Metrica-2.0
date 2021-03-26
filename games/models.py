@@ -16,11 +16,12 @@ class Games(models.Model):
 class GameSession(models.Model):
     game = models.ForeignKey(Games, on_delete=models.CASCADE, default='default_game', related_name='sessions')
     created_at = models.DateTimeField()
+
     class Meta():
         ordering = ['-created_at']
 
     def __str__(self):
-        return str(self.created_at)
+        return f'Game: {self.game}; date: {str(self.created_at)}'
 
 
 class GameScores(models.Model):
