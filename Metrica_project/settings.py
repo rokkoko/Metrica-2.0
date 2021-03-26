@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'games',
     'bootstrap4',
     'anymail',
-    'debug_toolbar'
+    'debug_toolbar',
+    'django_filters',
 ]
 
 MIDDLEWARE = [

@@ -13,6 +13,7 @@ from games.db_actions import get_game_id_by_name, get_game_object_by_id, \
 from django.views.decorators.csrf import csrf_exempt
 from Metrica_project.stats_bot import StatsBot
 from django.db.models import Sum
+from games.filter import GamesFilter
 
 stats_bot_token = os.getenv("STATS_BOT_TOKEN_TEST")
 stats_bot = StatsBot(stats_bot_token)
@@ -57,6 +58,21 @@ class GamesListView(ListView):
     model = Games
     template_name = 'games_index.html'
     context_object_name = 'games'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+
+        context = super().get_context_data()
+
+        if self.request.user.is_authenticated:
+            if self.request.GET.get('self_game_sessions') == "on":
+                context['filter'] = GamesFilter(
+                    self.request.GET,
+                    queryset=GameSession.objects.filter(scores__user=self.request.user)
+                )
+        else:
+            context["filter"] = GamesFilter(
+                self.request.GET)
+        return context
 
 
 class GamesAddView(CreateView):
