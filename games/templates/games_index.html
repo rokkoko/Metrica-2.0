@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load bootstrap4 %}
 
 {% block content %}
     <div class="row mb-3">
@@ -55,4 +56,11 @@
             </table>
         </div>
     </div>
+    <form method="get">
+		{% bootstrap_form filter.form %}
+        <input type="submit" />
+    </form>
+    {% for obj in filter.qs %}
+        {{ obj.name }} - ${{ obj.price }}<br />
+    {% endfor %}
 {% endblock %}
