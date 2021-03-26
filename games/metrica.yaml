@@ -1,0 +1,73 @@
+openapi: 3.0.3
+info:
+  title: Metrica
+  description: API to work with stats data
+  version: 1.0.0
+servers:
+  - url: 'https://a-metrica.herokuapp.com/api'
+paths:
+  /users:
+    get:
+      description: Returns a list of users
+      responses:
+        '200':
+          description: Successfully returned a lists of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    username:
+                      type: string
+                    first_name:
+                      type: string
+                    last_name:
+                      type: string
+                    email:
+                      type: string
+                    avatar:
+                      type: string
+    post:
+      description: Create a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: username
+              properties:
+                username:
+                  type: string
+
+      responses:
+        '200':
+          description: Succesfully created a new user
+  /users/{id}:
+    get:
+      description: Get user by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully returned a user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                  first_name:
+                    type: string
+                  last_name:
+                    type: string
+                  avatar:
+                    type: string
+                  email:
+                    type: string
