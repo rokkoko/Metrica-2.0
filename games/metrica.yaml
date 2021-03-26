@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
   title: Metrica
-  description: API to work with stats data
-  version: 1.0.0
+  description: 'API to work with stats data: create users, games, sessions'
+  version: 0.0.1
 servers:
   - url: 'https://a-metrica.herokuapp.com/api'
 paths:
@@ -17,17 +17,8 @@ paths:
               schema:
                 type: array
                 items:
-                  properties:
-                    username:
-                      type: string
-                    first_name:
-                      type: string
-                    last_name:
-                      type: string
-                    email:
-                      type: string
-                    avatar:
-                      type: string
+                  $ref: '#/components/schemas/User'
+
     post:
       description: Create a new user
       requestBody:
@@ -44,6 +35,7 @@ paths:
       responses:
         '200':
           description: Succesfully created a new user
+
   /users/{id}:
     get:
       description: Get user by id
@@ -59,15 +51,20 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  username:
-                    type: string
-                  first_name:
-                    type: string
-                  last_name:
-                    type: string
-                  avatar:
-                    type: string
-                  email:
-                    type: string
+                $ref: '#/components/schemas/User'
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        avatar:
+          type: string
+        email:
+          type: string
