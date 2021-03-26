@@ -12,10 +12,12 @@
 
     <form method="get">
 		{% bootstrap_form filter.form %}
-   		<div class="form-check">
-			<label class="form-check" for="id_self_game_sessions">My game sessions</label>
-			<input type="checkbox" name="self_game_sessions" id="id_self_game_sessions">
-		</div>
+        {% if user.is_authenticated %}
+            <div class="form-check">
+                <label class="form-check" for="id_self_game_sessions">My game sessions</label>
+                <input type="checkbox" name="self_game_sessions" id="id_self_game_sessions">
+            </div>
+        {% endif %}
         {% bootstrap_button "Показать" button_class="btn-success" %}
     </form><br>
 
