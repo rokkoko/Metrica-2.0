@@ -5,7 +5,7 @@ import datetime
 
 
 class CustomUser(AbstractUser):
-    avatar = models.ImageField(upload_to='uploads/%Y/%m/%d/', null=True)
+    avatar = models.ImageField(upload_to='uploads/%Y/%m/%d/', null=True, blank=True)
 
     class Meta():
         ordering = ["username"]
