@@ -1,0 +1,36 @@
+{
+  "types": {
+    "refactor": {
+      "description": "Changes which neither fix a bug nor add a feature"
+    },
+    "fix": {
+      "description": "Changes which patch a bug"
+    },
+    "feature": {
+      "description": "Changes which introduce a new feature"
+    },
+    "docs": {
+      "description": "Changes which affect documentation"
+    },
+    "infrastructure": {
+      "description": "Changes which affect CI configuration files and scripts.<br/>Example scopes: travis, circle, browser-stack, sauce-labs"
+    }
+  },
+  "commonScopes": {
+    "bot": {
+      "description": "Telegram connectivity, bot communication"
+    },
+    "frontend": {
+      "description": "Templates, scripts, styles"
+    },
+    "backend": {
+      "description": "Database, urls, views"
+    }
+  },
+  "footerTypes": [
+    {
+      "name": "Closes",
+      "description": "The commit closes issues or pull requests"
+    }
+  ]
+}
