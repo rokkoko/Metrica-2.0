@@ -35,20 +35,17 @@ class GamesDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context['users'] = CustomUser.objects.distinct().filter(scores__game_session__game__pk=self.kwargs['pk'])
-        context['scores'] = dict()
-        # Set new pairs to context dict for template with All players for game instance with aggregate score sum
-        for player in context['users']:
-            context['scores'].setdefault(player.username,
-                                         GameScores.objects.filter(game_session__game__pk=self.kwargs['pk']).filter(
-                                             user=player).aggregate(Sum('score'))['score__sum'])
+        users = CustomUser.objects.distinct().filter(scores__game_session__game__pk=self.kwargs['pk'])
+
+        users_with_scores = list(map(lambda user: dict(name=user.username,
+                                      score=GameScores.objects.filter(game_session__game__pk=self.kwargs['pk']).filter(
+                                          user=user).aggregate(Sum('score'))['score__sum']), users))
+
+        context["users"] = users_with_scores
 
         # We put this to server data as JSON and read from Javascript side
         context['server_data'] = {
-            "gamesDetailsChart": {
-                "labels": list(context['scores'].keys()),
-                "data": list(context['scores'].values())
-            }
+            "users": users_with_scores
         }
 
         return context
