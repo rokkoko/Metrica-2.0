@@ -57,15 +57,15 @@
             </td>
             <td>
                 <ul class="list-unstyled">
-                    {% for player in users %}
-                        <li>{{ player }}</li>
+                    {% for user in users %}
+                        <li>{{ user.name }}</li>
                     {% endfor %}
                 </ul>
             </td>
             <td>
                 <ul>
-                    {% for item in scores.values %}
-                        <li>{{ item }}</li>
+                    {% for user in users %}
+                        <li>{{ user.score }}</li>
                     {% endfor %}
                 </ul>
             </td>
