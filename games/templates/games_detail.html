@@ -10,12 +10,17 @@
         </div>
     </div>
 
-    <div class="row">
+    <div class="row mb-5">
         <div class="col">
-            {% comment %}
-            This is the element where chart is rendered. We select it in games_details_chart.js script by id
-            {% endcomment %}
-            <canvas id="gamesDetailsChart"></canvas>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Очки всех участников этой игры</h5>
+                    {% comment %}
+                    This is the element where chart is rendered. We select it in games_details_chart.js script by id
+                    {% endcomment %}
+                    <canvas id="gamesDetailsChart"></canvas>
+                </div>
+            </div>
         </div>
     </div>
 

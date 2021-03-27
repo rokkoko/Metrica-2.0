@@ -1,7 +1,6 @@
 const ctx = document.getElementById("gamesDetailsChart");
-const { labels, data } = serverData.gamesDetailsChart;
 
-const colors = [
+const COLORS = [
   "rgba(255, 99, 132, 0.2)",
   "rgba(54, 162, 235, 0.2)",
   "rgba(255, 206, 86, 0.2)",
@@ -10,28 +9,39 @@ const colors = [
   "rgba(255, 159, 64, 0.2)",
 ];
 
-console.log(serverData);
+function getColor(index) {
+  return COLORS[index % COLORS.length];
+}
 
 const gamesDetailsChart = new Chart(ctx, {
   type: "horizontalBar",
   data: {
-    labels,
+    labels: serverData.users.map((user) => user.name),
     datasets: [
       {
-        data,
-        backgroundColor: "rgba(54, 162, 235, 0.2)",
-        barPercentage: 0.95,
-        categoryPercentage: 1,
+        data: serverData.users.map((user) => user.score),
+        backgroundColor: ({ dataIndex }) => COLORS[dataIndex % COLORS.length],
       },
     ],
   },
   options: {
+    aspectRatio: 6, // This make chart narrow
     legend: false,
     scales: {
+      yAxes: [
+        {
+          gridLines: {
+            display: false,
+          },
+        },
+      ],
       xAxes: [
         {
           ticks: {
             beginAtZero: true,
+          },
+          gridLines: {
+            color: "#f2f2f2",
           },
         },
       ],
