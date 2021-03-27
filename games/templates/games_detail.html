@@ -14,11 +14,20 @@
         <div class="col">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Очки всех участников этой игры</h5>
-                    {% comment %}
-                    This is the element where chart is rendered. We select it in games_details_chart.js script by id
-                    {% endcomment %}
-                    <canvas id="gamesDetailsChart"></canvas>
+                    <div class="d-flex justify-content-between">
+                        <div><h5 class="card-title">Очки всех участников</h5></div>
+                        <div>
+                            <button type="button" class="btn btn-light">неделя</button>
+                            <button type="button" class="btn btn-link">месяц</button>
+                            <button type="button" class="btn btn-link">3 месяца</button>
+                        </div>
+                    </div>
+                    <div>
+                        {% comment %}
+                        This is the element where chart is rendered. We select it in games_details_chart.js script by id
+                        {% endcomment %}
+                        <canvas id="gamesDetailsChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
