@@ -30,4 +30,4 @@ class GameScores(models.Model):
     score = models.IntegerField('score')
 
     def __str__(self):
-        return str(self.score)
+        return f'Player: {self.user.username}; game: {self.game_session.game.name}; score: {str(self.score)}'
