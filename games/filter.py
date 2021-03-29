@@ -4,13 +4,13 @@ from users.models import CustomUser
 
 
 class GamesFilter(django_filters.FilterSet):
-    game = django_filters.ModelChoiceFilter(queryset=Games.objects.all().prefetch_related("sessions", "sessions__scores"))
+    game = django_filters.ModelChoiceFilter(queryset=Games.objects.all())
     created_at = django_filters.NumberFilter(
         label='month played game',
         method='get_month',
     )
     user = django_filters.ModelChoiceFilter(
-        queryset=CustomUser.objects.all().prefetch_related("scores"),
+        queryset=CustomUser.objects.prefetch_related("scores"),
         field_name="scores__user",
         label="User"
     )
@@ -21,12 +21,17 @@ class GamesFilter(django_filters.FilterSet):
         widget=django_filters.widgets.RangeWidget(attrs={'placeholder': 'e.g. 2021-04-03 (YYYY-MM-DD)'})
     )
 
+    class Meta:
+        model = GameSession
+        fields = ["game", "created_at",]
+
     def get_month(self, queryset, field_name, month):
         return queryset.filter(created_at__month=month)
 
     def get_user(self, queryset, field_name, user):
         return queryset.filter(scores__user=user)
 
-    class Meta:
-        model = GameSession
-        fields = ["game", "created_at",]
+    @property
+    def qs(self):
+        parent = super().qs
+        return parent.prefetch_related("game", "scores__user")

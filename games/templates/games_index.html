@@ -57,35 +57,6 @@
                         </td>
                     </tr>
                 {% endfor %}
-
-
-{% comment %}
-                {% for game_session in game_session_boost %}
-                    <tr>
-                        <th scope="row">{{ game_session.game.pk }}</th>
-                        <td>
-                            <a href={% url 'games:games_detail' game_session.game.pk %}>{{ game_session.game.name }}</a>
-                        </td>
-                        <td>
-                            <ul class="list-unstyled">
-                                    <li>{{ game_session.created_at }}</li>
-                            </ul>
-                        </td>
-                        <td>
-                            {% for score in game_session.scores.all %}
-                                {{ score.user }}
-                            {% endfor %}
-                        </td>
-                        <td>
-                            {% for score in game_session.scores.all %}
-                                {{ score.score }}
-                            {% endfor %}
-                        </td>
-                    </tr>
-                {% endfor %}
-
-{% endcomment %}
-
                 </tbody>
             </table>
         </div>
