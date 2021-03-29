@@ -59,6 +59,8 @@ class GamesListView(ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
 
         context = super().get_context_data()
+        context["filter"] = GamesFilter(
+            self.request.GET)
 
         if self.request.user.is_authenticated:
             if self.request.GET.get('self_game_sessions') == "on":
@@ -66,9 +68,7 @@ class GamesListView(ListView):
                     self.request.GET,
                     queryset=GameSession.objects.filter(scores__user=self.request.user)
                 )
-        else:
-            context["filter"] = GamesFilter(
-                self.request.GET)
+
         return context
 
 
