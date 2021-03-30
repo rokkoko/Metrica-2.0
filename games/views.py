@@ -5,11 +5,13 @@ from games.forms import GameCreationForm
 from users.models import CustomUser
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
+from django.views import View
 from django.views.generic import ListView, DetailView
 from django.views.generic import DetailView
+from django.utils.decorators import method_decorator
 from django.views.generic.edit import CreateView, UpdateView
 from games.db_actions import get_game_id_by_name, get_game_object_by_id, \
-    add_game_into_db, add_game_session_into_db, add_scores
+    add_game_into_db, add_game_into_db_single_from_bot, add_game_session_into_db, add_scores
 from django.views.decorators.csrf import csrf_exempt
 from Metrica_project.stats_bot import StatsBot
 from django.db.models import Sum
@@ -76,3 +78,16 @@ class GamesAddView(CreateView):
     model = Games
     form_class = GameCreationForm
     template_name = 'add_game.html'
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class GamesAddBotView(View):
+    def post(self, request):
+        request_raw = request.body
+        request_json = json.loads(request_raw)
+        game_name = request_json["game_name"]
+        result = add_game_into_db_single_from_bot(game_name)
+        new_game_msg = f'New game "{game_name}" added to Metrica!'
+        exist_game_msg = f'Game "{game_name}" already tracking by Metrica!'
+
+        return HttpResponse(new_game_msg if result else exist_game_msg)

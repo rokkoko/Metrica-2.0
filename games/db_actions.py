@@ -53,6 +53,20 @@ def add_game_into_db(name):
     return game
 
 
+def add_game_into_db_single_from_bot(name):
+    """
+    Insert new game into db
+    :param name: str()-name of the game
+    :return: model object of new added game
+    """
+    game = Games.objects.get_or_create(name=name)
+    if game[1]:
+        print(f"New game '{name}' added to Metrica!")
+    else:
+        print(f"Game '{name}' already tracking by Metrica")
+    return game[1]
+
+
 def add_game_session_into_db(game):
     """
     Insert new game session object (row) into db
