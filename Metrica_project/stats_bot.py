@@ -7,6 +7,7 @@ import requests
 
 
 REGISTRATION_URL = 'https://d62d53c99f46.ngrok.io/users/add_user/'
+ADD_GAME_URL = 'https://d62d53c99f46.ngrok.io/games/add_game_from_bot/'
 
 class StatsBot:
     def __init__(self, token):
@@ -15,6 +16,7 @@ class StatsBot:
         self.dispatcher.add_handler(CommandHandler("add", add_stats_command))
         self.dispatcher.add_handler(CommandHandler("show", show_stats_command))
         self.dispatcher.add_handler(CommandHandler("register", register_user_command))
+        self.dispatcher.add_handler(CommandHandler("add_game", add_game_command))
         self.dispatcher.add_handler(
             MessageHandler(~Filters.command, process_bot_reply_message))
 
@@ -23,6 +25,17 @@ class StatsBot:
         print('Update decoded', update.update_id)
         self.dispatcher.process_update(update)
         print('Stats request processed successfully', update.update_id)
+
+def add_game_command(update, context):
+    context.user_data["last_command"] = "GAME"
+    update.message.reply_text(
+        f'Добавить игру',
+        reply_markup=ForceReply())
+
+def process_add_game_command(update, context):
+    game = update.message.text
+    response = requests.post(REGISTRATION_URL, json={"game_name": str(game)})
+    update.message.reply_text(response.text)
 
 
 def register_user_command(update, context):
@@ -85,6 +98,8 @@ def process_bot_reply_message(update, context):
             process_unknown_message(update, context)
     elif last_command == 'REGISTER':
         register_command(update, context)
+    elif last_command == 'GAME':
+        process_add_game_command(update, context)
 
 
 def process_show_stats_message(update, context):
