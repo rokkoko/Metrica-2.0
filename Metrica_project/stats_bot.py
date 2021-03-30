@@ -17,6 +17,7 @@ class StatsBot:
         self.dispatcher.add_handler(CommandHandler("show", show_stats_command))
         self.dispatcher.add_handler(CommandHandler("register", register_user_command))
         self.dispatcher.add_handler(CommandHandler("add_game", add_game_command))
+        self.dispatcher.add_handler(MessageHandler(Filters.photo, process_photo_message))
         self.dispatcher.add_handler(
             MessageHandler(~Filters.command, process_bot_reply_message))
 
@@ -36,6 +37,11 @@ def process_add_game_command(update, context):
     game = update.message.text
     response = requests.post(REGISTRATION_URL, json={"game_name": str(game)})
     update.message.reply_text(response.text)
+
+
+def process_photo_message(update, context):
+    photo_file = update.message.photo[-1].get_file()
+    photo_file.download('avatar.jpg')
 
 
 def register_user_command(update, context):
