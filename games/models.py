@@ -4,7 +4,7 @@ from users.models import CustomUser
 
 class Games(models.Model):
     name = models.CharField('Game name', max_length=100, unique=True)
-    cover_art = models.ImageField(upload_to='uploads/games_cover/%Y/%m/%d/', null=True)
+    cover_art = models.ImageField(upload_to='uploads/games_cover/%Y/%m/%d/', null=True, blank=True)
 
     def __str__(self):
         return self.name
