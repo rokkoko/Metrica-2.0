@@ -16,6 +16,9 @@ from django.views.decorators.csrf import csrf_exempt
 from Metrica_project.stats_bot import StatsBot
 from django.db.models import Sum
 from games.filter import GamesFilter
+from PIL import Image
+from io import BytesIO
+import base64
 
 stats_bot_token = os.getenv("STATS_BOT_TOKEN_TEST")
 stats_bot = StatsBot(stats_bot_token)
@@ -86,8 +89,23 @@ class GamesAddBotView(View):
         request_raw = request.body
         request_json = json.loads(request_raw)
         game_name = request_json["game_name"]
-        result = add_game_into_db_single_from_bot(game_name)
+        avatar = request_json["avatar"]
+        result = add_game_into_db_single_from_bot(game_name, base64.b64decode(avatar))
         new_game_msg = f'New game "{game_name}" added to Metrica!'
         exist_game_msg = f'Game "{game_name}" already tracking by Metrica!'
+
+
+        # РЕАЛИЗАЦИИ СОХРАНЕНИЯ ФАЙЛОВ СО ВСТРОЕННОЙ СИСТЕМОЙ ЗАКАЧКИ ФАЙЛОВ DJANGO, НО В ЭТОМ СЛУЧАЕ НЕПОНЯТНО КАК В ОДИН РЕКВЕСТ ПЕРЕДАВАТЬ И ФАЙЛ И JSON С НАЗВАНИЕМ ИГРЫ
+
+        # FIRST realiztion with Pillow
+        # image = Image.open(BytesIO(request.FILES['file'].read()))
+        # image.save('image.jpg')
+
+        # SECOND realization with simple file context manager
+        # with open('chunk.jpg', 'wb+') as new_file:
+        #     for chunk in request.FILES['file'].chunks():
+        #         new_file.write(chunk)
+        #
+        # Games.objects.create(name=request.POST['game_name'], cover_art=request.FILES['file'])
 
         return HttpResponse(new_game_msg if result else exist_game_msg)

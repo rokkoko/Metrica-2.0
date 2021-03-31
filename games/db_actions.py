@@ -53,13 +53,14 @@ def add_game_into_db(name):
     return game
 
 
-def add_game_into_db_single_from_bot(name):
+def add_game_into_db_single_from_bot(name, file):
     """
     Insert new game into db
     :param name: str()-name of the game
     :return: model object of new added game
     """
-    game = Games.objects.get_or_create(name=name)
+    with open(file, 'rb') as f:
+        game = Games.objects.get_or_create(name=name, cover_art=f)
     if game[1]:
         print(f"New game '{name}' added to Metrica!")
     else:

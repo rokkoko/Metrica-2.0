@@ -4,10 +4,11 @@ from .income_msg_parser import parse_message
 from telegram import Bot, Update, ForceReply
 from telegram.ext import Dispatcher, CommandHandler, MessageHandler, Filters
 import requests
+import base64
 
 
 REGISTRATION_URL = 'https://d62d53c99f46.ngrok.io/users/add_user/'
-ADD_GAME_URL = 'https://d62d53c99f46.ngrok.io/games/add_game_from_bot/'
+ADD_GAME_URL = 'https://21ec826a2f53.ngrok.io/games/add_game_from_bot/'
 
 class StatsBot:
     def __init__(self, token):
@@ -34,7 +35,7 @@ def add_game_command(update, context):
 
 def process_add_game_command(update, context):
     game = update.message.text
-    response = requests.post(REGISTRATION_URL, json={"game_name": str(game)})
+    response = requests.post(ADD_GAME_URL, json={"game_name": str(game), "avatar": base64.b64encode(update.message.photo[-1].get_file())})
     update.message.reply_text(response.text)
 
 
