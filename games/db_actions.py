@@ -53,14 +53,27 @@ def add_game_into_db(name):
     return game
 
 
-def add_game_into_db_single_from_bot(name, file):
+def add_game_into_db_single_from_bot(name, data):
     """
     Insert new game into db
     :param name: str()-name of the game
     :return: model object of new added game
     """
-    with open(file, 'rb') as f:
-        game = Games.objects.get_or_create(name=name, cover_art=f)
+    with open('test3.jpg', 'wb+') as f:
+        f.write(data)
+        f.close()
+
+# Тут для поля ImageFiled просто указываем путь на скачанную аватарку.
+# Для этого предварительно сохраняем переданное изображение.
+# Т.к. бот у нас отправялет json и view его парсит (json.loads()), то нам
+# request'ом нужно передать json. Чтобы в него вставить файл - кодирую его
+# base64. ПРОБЛЕМА в том, что сериализация типов bytes (а это именно он в base64)
+# не поддерживается. А преобразовав этот тип в str() в строке 63 не происходит
+# корректная запись инфы в файл. Но все остальное работает (содается объект модели
+# и хаполняется поле ImageField ссылкой на битый файл)
+
+    game = Games.objects.get_or_create(name=name, cover_art='test3.jpg')
+
     if game[1]:
         print(f"New game '{name}' added to Metrica!")
     else:
