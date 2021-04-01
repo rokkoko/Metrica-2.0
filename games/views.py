@@ -86,11 +86,9 @@ class GamesAddView(CreateView):
 @method_decorator(csrf_exempt, name='dispatch')
 class GamesAddBotView(View):
     def post(self, request):
-        request_raw = request.body
-        request_json = json.loads(request_raw)
-        game_name = request_json["game_name"]
-        avatar = request_json["avatar"]
-        result = add_game_into_db_single_from_bot(game_name, base64.b64decode(avatar))
+        game_name = request.POST["game_name"]
+        avatar = request.FILES["avatar"]
+        result = add_game_into_db_single_from_bot(game_name, avatar)
         new_game_msg = f'New game "{game_name}" added to Metrica!'
         exist_game_msg = f'Game "{game_name}" already tracking by Metrica!'
 
@@ -100,12 +98,5 @@ class GamesAddBotView(View):
         # FIRST realiztion with Pillow
         # image = Image.open(BytesIO(request.FILES['file'].read()))
         # image.save('image.jpg')
-
-        # SECOND realization with simple file context manager
-        # with open('chunk.jpg', 'wb+') as new_file:
-        #     for chunk in request.FILES['file'].chunks():
-        #         new_file.write(chunk)
-        #
-        # Games.objects.create(name=request.POST['game_name'], cover_art=request.FILES['file'])
 
         return HttpResponse(new_game_msg if result else exist_game_msg)
