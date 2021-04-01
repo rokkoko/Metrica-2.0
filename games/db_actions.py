@@ -1,12 +1,16 @@
 from datetime import datetime
 from django.db.models import Sum
+from django.conf import settings
 from users.models import CustomUser
 from .models import Games, GameScores, GameSession
 from .checkup import negative_score_check
 from users.db_actions import get_username_by_id
 from users.db_actions import add_user_into_db_from_score_pairs
 from users.db_actions import get_user_object_by_id
+import uuid
+import os
 
+MEDIA_ROOT = settings.MEDIA_ROOT + '\\uploads\\games_cover'
 
 def get_game_id_by_name(name):
     """
@@ -59,20 +63,17 @@ def add_game_into_db_single_from_bot(name, data):
     :param name: str()-name of the game
     :return: model object of new added game
     """
-    with open('test3.jpg', 'wb+') as f:
-        f.write(data)
+    file_name = str(uuid.uuid4()) + '.jpg'
+    db_path = "\\uploads\\games_cover" + str(datetime.now().strftime('\\%Y\\%m\\%d\\')) + file_name
+    full_path = MEDIA_ROOT + str(datetime.now().strftime('\\%Y\\%m\\%d\\'))
+
+    os.makedirs(full_path, exist_ok=True)
+
+    with open(full_path + file_name, 'wb+') as f:
+        f.write(data.read())
         f.close()
 
-# Тут для поля ImageFiled просто указываем путь на скачанную аватарку.
-# Для этого предварительно сохраняем переданное изображение.
-# Т.к. бот у нас отправялет json и view его парсит (json.loads()), то нам
-# request'ом нужно передать json. Чтобы в него вставить файл - кодирую его
-# base64. ПРОБЛЕМА в том, что сериализация типов bytes (а это именно он в base64)
-# не поддерживается. А преобразовав этот тип в str() в строке 63 не происходит
-# корректная запись инфы в файл. Но все остальное работает (содается объект модели
-# и хаполняется поле ImageField ссылкой на битый файл)
-
-    game = Games.objects.get_or_create(name=name, cover_art='test3.jpg')
+    game = Games.objects.get_or_create(name=name, cover_art=db_path)
 
     if game[1]:
         print(f"New game '{name}' added to Metrica!")
