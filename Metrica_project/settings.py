@@ -33,7 +33,7 @@ DEBUG = bool(os.getenv('DEBUG_MODE'))
 ALLOWED_HOSTS = [
     'a-metrica.herokuapp.com',
     '127.0.0.1',
-    'f9e895d10763.ngrok.io',
+    '5fd23ff71635.ngrok.io',
     'testserver',
 ]
 
@@ -106,10 +106,10 @@ WSGI_APPLICATION = 'Metrica_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME_HEROKU'),
-        'USER': os.getenv('DB_USER_HEROKU'),
-        'PASSWORD': os.getenv('DB_PASSWORD_HEROKU'),
-        'HOST': os.getenv('DB_HOST_HEROKU'),
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
         'PORT': '5432',
         'TEST': {
             'NAME': os.getenv('TEST_DB'),
