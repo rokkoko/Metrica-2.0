@@ -18,6 +18,7 @@ import base64
 
 MEDIA_ROOT = settings.MEDIA_ROOT + '\\uploads\\games_cover'
 
+
 def get_game_id_by_name(name):
     """
     :param name: str()-repr of game name
@@ -37,7 +38,6 @@ def get_game_names_list():
     queryset = Games.objects.all()
     _list = [elem.name for elem in queryset]
     return _list
-
 
 
 def get_game_object_by_id(game_id):
@@ -63,31 +63,32 @@ def add_game_into_db(name):
     return game
 
 
-def add_game_into_db_single_from_bot(name, data: django.core.files.uploadedfile.InMemoryUploadedFile):
+def add_game_into_db_single_from_bot(name, data):
     """
     Insert new game into db
+    :param data: InMemoryUploadedFile game cover
     :param name: str()-name of the game
     :return: model object of new added game
     """
-    file_name = str(uuid.uuid4()) + '.jpg'
-    db_path = "\\uploads\\games_cover" + str(datetime.now().strftime('\\%Y\\%m\\%d\\')) + file_name
-    full_path = MEDIA_ROOT + str(datetime.now().strftime('\\%Y\\%m\\%d\\'))
+    dirs_by_date = datetime.now().strftime('\\%Y\\%m\\%d\\')
+    file_name = f"{uuid.uuid4()}.jpg"
+    db_path = f"\\uploads\\games_cover\\{dirs_by_date}\\{file_name}"
+    full_path = f"{MEDIA_ROOT}\\{dirs_by_date}"
 
     os.makedirs(full_path, exist_ok=True)
+    file_bytes = data.read()
 
-    # REALIZATION with imghdr check and common file-writing process (imghdr.what() returns image-file extension or None
-    # in case NON-image source for file-writing)
-    read_file = data.read()
-    if imghdr.what(io.BytesIO(read_file)) is not None:
+    if imghdr.what('', file_bytes) is not None:
         with open(full_path + file_name, 'wb+') as f:
-            f.write(read_file)
+            f.write(file_bytes)
             f.close()
         try:
             game = Games.objects.get_or_create(name=name, cover_art=db_path)
         except django.db.utils.IntegrityError as e:
             print(f"Fail unique constraint for game_name. Game already in db. Error signature: '{e}'")
             return
-    elif imghdr.what(io.BytesIO(data.read())) is None:
+
+    elif imghdr.what(file_bytes) is None:
         print(
             "NON-image file cannot be processed. "
             "In case with new game - it will be saved without cover_art"
@@ -95,7 +96,6 @@ def add_game_into_db_single_from_bot(name, data: django.core.files.uploadedfile.
         game = Games.objects.get_or_create(name=name)
 
     return game[1]
-
 
     # REALIZATION with PIL.Image check and file-writing process (class.Image won't write file from NON-image source)
 
@@ -113,6 +113,7 @@ def add_game_into_db_single_from_bot(name, data: django.core.files.uploadedfile.
     #         return
     #
     #     return game[1]
+
 
 def add_game_session_into_db(game):
     """

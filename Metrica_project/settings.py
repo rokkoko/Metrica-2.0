@@ -33,7 +33,7 @@ DEBUG = bool(os.getenv('DEBUG_MODE'))
 ALLOWED_HOSTS = [
     'a-metrica.herokuapp.com',
     '127.0.0.1',
-    '5fd23ff71635.ngrok.io',
+    'rokkoko-metrika-1.ejemplo.me',
     'testserver',
 ]
 
