@@ -2,21 +2,24 @@ import datetime as date
 from games.db_actions import stats_repr, add_scores, get_game_names_list, get_game_id_by_name
 from .income_msg_parser import parse_message
 from telegram import Bot, Update, ForceReply
-from telegram.ext import Dispatcher, CommandHandler, MessageHandler, Filters
+from telegram.ext import Dispatcher, CommandHandler, MessageHandler, Filters, ConversationHandler
 import requests
 
-
 REGISTRATION_URL = 'https://d62d53c99f46.ngrok.io/users/add_user/'
-ADD_GAME_URL = 'https://d62d53c99f46.ngrok.io/games/add_game_from_bot/'
+ADD_GAME_URL = 'https://rokkoko-metrika-1.ejemplo.me/games/add_game_from_bot/'
+
+GAME_NAME, GAME_COVER = range(2)
+
 
 class StatsBot:
+
     def __init__(self, token):
         self.bot = Bot(token)
         self.dispatcher = Dispatcher(self.bot, None, workers=0)
         self.dispatcher.add_handler(CommandHandler("add", add_stats_command))
         self.dispatcher.add_handler(CommandHandler("show", show_stats_command))
         self.dispatcher.add_handler(CommandHandler("register", register_user_command))
-        self.dispatcher.add_handler(CommandHandler("add_game", add_game_command))
+        self.dispatcher.add_handler(conv_handler)
         self.dispatcher.add_handler(
             MessageHandler(~Filters.command, process_bot_reply_message))
 
@@ -26,17 +29,6 @@ class StatsBot:
         self.dispatcher.process_update(update)
         print('Stats request processed successfully', update.update_id)
 
-def add_game_command(update, context):
-    context.user_data["last_command"] = "GAME"
-    update.message.reply_text(
-        f'Добавить игру',
-        reply_markup=ForceReply())
-
-def process_add_game_command(update, context):
-    game = update.message.text
-    response = requests.post(REGISTRATION_URL, json={"game_name": str(game)})
-    update.message.reply_text(response.text)
-
 
 def register_user_command(update, context):
     # Store the command in context to check later in message processors
@@ -45,10 +37,12 @@ def register_user_command(update, context):
         f'Зарегистрировать юзера',
         reply_markup=ForceReply())
 
+
 def register_command(update, context):
     user = update.message.text
     response = requests.post(REGISTRATION_URL, json={"user": str(user)})
     update.message.reply_text(response.text)
+
 
 def add_stats_command(update, context):
     # Store the command in context to check later in message processors
@@ -98,8 +92,6 @@ def process_bot_reply_message(update, context):
             process_unknown_message(update, context)
     elif last_command == 'REGISTER':
         register_command(update, context)
-    elif last_command == 'GAME':
-        process_add_game_command(update, context)
 
 
 def process_show_stats_message(update, context):
@@ -133,3 +125,41 @@ def process_add_stats_message(update, context):
         result_msg += user_name + ': ' + str(score) + '\n'
 
     update.message.reply_text(result_msg)
+
+
+def add_game_start(update, context):
+    update.message.reply_text('What is the name of the game?')
+
+    return GAME_NAME
+
+
+def game_name(update, context):
+    context.user_data['game_name'] = update.message.text
+    update.message.reply_text('Send game cover')
+
+    return GAME_COVER
+
+
+def game_cover(update, context):
+    game_name = context.user_data["game_name"]
+    photo = update.message.photo[-1].get_file()
+    requests.post(ADD_GAME_URL, data={'game_name': game_name}, files={'avatar': photo.download_as_bytearray()})
+    update.message.reply_text('Game created')
+
+    return ConversationHandler.END
+
+
+def cancel(update):
+    update.message.reply_text('Cancel')
+
+    return ConversationHandler.END
+
+
+conv_handler = ConversationHandler(
+    entry_points=[CommandHandler('add_game', add_game_start)],
+    states={
+        GAME_NAME: [MessageHandler(Filters.text & ~Filters.command, game_name)],
+        GAME_COVER: [MessageHandler(Filters.photo, game_cover)]
+    },
+    fallbacks=[CommandHandler('cancel', cancel)]
+)
