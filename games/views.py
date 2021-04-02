@@ -92,11 +92,4 @@ class GamesAddBotView(View):
         new_game_msg = f'New game "{game_name}" added to Metrica!'
         exist_game_msg = f'Game "{game_name}" already tracking by Metrica!'
 
-
-        # РЕАЛИЗАЦИИ СОХРАНЕНИЯ ФАЙЛОВ СО ВСТРОЕННОЙ СИСТЕМОЙ ЗАКАЧКИ ФАЙЛОВ DJANGO, НО В ЭТОМ СЛУЧАЕ НЕПОНЯТНО КАК В ОДИН РЕКВЕСТ ПЕРЕДАВАТЬ И ФАЙЛ И JSON С НАЗВАНИЕМ ИГРЫ
-
-        # FIRST realiztion with Pillow
-        # image = Image.open(BytesIO(request.FILES['file'].read()))
-        # image.save('image.jpg')
-
         return HttpResponse(new_game_msg if result else exist_game_msg)

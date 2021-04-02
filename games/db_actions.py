@@ -8,7 +8,13 @@ from users.db_actions import get_username_by_id
 from users.db_actions import add_user_into_db_from_score_pairs
 from users.db_actions import get_user_object_by_id
 import uuid
+import PIL
 import os
+import io
+import django.db.utils
+import imghdr
+import django.core.files.uploadedfile
+import base64
 
 MEDIA_ROOT = settings.MEDIA_ROOT + '\\uploads\\games_cover'
 
@@ -57,7 +63,7 @@ def add_game_into_db(name):
     return game
 
 
-def add_game_into_db_single_from_bot(name, data):
+def add_game_into_db_single_from_bot(name, data: django.core.files.uploadedfile.InMemoryUploadedFile):
     """
     Insert new game into db
     :param name: str()-name of the game
@@ -69,18 +75,44 @@ def add_game_into_db_single_from_bot(name, data):
 
     os.makedirs(full_path, exist_ok=True)
 
-    with open(full_path + file_name, 'wb+') as f:
-        f.write(data.read())
-        f.close()
+    # REALIZATION with imghdr check and common file-writing process (imghdr.what() returns image-file extension or None
+    # in case NON-image source for file-writing)
+    read_file = data.read()
+    if imghdr.what(io.BytesIO(read_file)) is not None:
+        with open(full_path + file_name, 'wb+') as f:
+            f.write(read_file)
+            f.close()
+        try:
+            game = Games.objects.get_or_create(name=name, cover_art=db_path)
+        except django.db.utils.IntegrityError as e:
+            print(f"Fail unique constraint for game_name. Game already in db. Error signature: '{e}'")
+            return
+    elif imghdr.what(io.BytesIO(data.read())) is None:
+        print(
+            "NON-image file cannot be processed. "
+            "In case with new game - it will be saved without cover_art"
+        )
+        game = Games.objects.get_or_create(name=name)
 
-    game = Games.objects.get_or_create(name=name, cover_art=db_path)
-
-    if game[1]:
-        print(f"New game '{name}' added to Metrica!")
-    else:
-        print(f"Game '{name}' already tracking by Metrica")
     return game[1]
 
+
+    # REALIZATION with PIL.Image check and file-writing process (class.Image won't write file from NON-image source)
+
+    # try:
+    #     image = PIL.Image.open(io.BytesIO(data.read()))
+    # except PIL.UnidentifiedImageError as e:
+    #     print(f"NON-image file cannot be processed. Error is: '{e}'.")
+    #     return
+    # else:
+    #     image.save(full_path + file_name)
+    #
+    #     try:
+    #         game = Games.objects.get_or_create(name=name, cover_art=db_path)
+    #     except django.db.utils.IntegrityError:
+    #         return
+    #
+    #     return game[1]
 
 def add_game_session_into_db(game):
     """
