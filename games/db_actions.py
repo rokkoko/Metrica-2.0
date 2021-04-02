@@ -8,15 +8,14 @@ from users.db_actions import get_username_by_id
 from users.db_actions import add_user_into_db_from_score_pairs
 from users.db_actions import get_user_object_by_id
 import uuid
-import PIL
 import os
-import io
 import django.db.utils
 import imghdr
 import django.core.files.uploadedfile
-import base64
+from games.utils import get_default_cover
+from dotenv import load_dotenv, find_dotenv
 
-MEDIA_ROOT = settings.MEDIA_ROOT + '\\uploads\\games_cover'
+load_dotenv(find_dotenv())
 
 
 def get_game_id_by_name(name):
@@ -53,7 +52,7 @@ def get_game_object_by_id(game_id):
     return game
 
 
-def add_game_into_db(name):
+def add_game_into_db(name):  # TODO refactor need for NOT NULL cover_art field
     """
     Insert new game into db
     :param name: str()-name of the game
@@ -63,37 +62,51 @@ def add_game_into_db(name):
     return game
 
 
-def add_game_into_db_single_from_bot(name, data):
+def add_game_into_db_single_from_bot(name, cover=None):
     """
     Insert new game into db
-    :param data: InMemoryUploadedFile game cover
+    :param cover: InMemoryUploadedFile (django wrapper on File object) game cover
     :param name: str()-name of the game
     :return: model object of new added game
     """
     dirs_by_date = datetime.now().strftime('\\%Y\\%m\\%d\\')
     file_name = f"{uuid.uuid4()}.jpg"
-    db_path = f"\\uploads\\games_cover\\{dirs_by_date}\\{file_name}"
-    full_path = f"{MEDIA_ROOT}\\{dirs_by_date}"
+    full_path = f"{settings.MEDIA_UPLOADS_ROOT}\\games_cover{dirs_by_date}"
+    file_fp = f"{full_path}{file_name}"
+
+    cover_path_for_field = f"\\uploads\\games_cover{dirs_by_date}{file_name}"
+    default_cover_path_for_field = f"\\uploads\\games_cover{dirs_by_date}default_cover.jpg"
+    default_cover_download_source = os.getenv('DEFAULT_GAME_COVER_SOURCE')
 
     os.makedirs(full_path, exist_ok=True)
-    file_bytes = data.read()
 
-    if imghdr.what('', file_bytes) is not None:
-        with open(full_path + file_name, 'wb+') as f:
-            f.write(file_bytes)
-            f.close()
-        try:
-            game = Games.objects.get_or_create(name=name, cover_art=db_path)
-        except django.db.utils.IntegrityError as e:
-            print(f"Fail unique constraint for game_name. Game already in db. Error signature: '{e}'")
-            return
+    get_default_cover(full_path, default_cover_download_source)
 
-    elif imghdr.what(file_bytes) is None:
-        print(
-            "NON-image file cannot be processed. "
-            "In case with new game - it will be saved without cover_art"
-        )
-        game = Games.objects.get_or_create(name=name)
+    if not cover:
+        game = Games.objects.get_or_create(name=name, cover_art=default_cover_path_for_field)
+
+    else:
+        file_bytes = cover.read()
+        if imghdr.what('', file_bytes) is not None:
+            with open(file_fp, 'wb') as f:
+                f.write(file_bytes)
+                f.close()
+            try:
+                game = Games.objects.get_or_create(name=name, cover_art=cover_path_for_field)
+            except django.db.utils.IntegrityError as e:
+                print(f"Fail unique constraint for game_name. Game already in db. Error signature: '{e}'")
+                return
+
+        elif imghdr.what('', file_bytes) is None:
+            print(
+                "NON-image file cannot be processed. "
+                "In case with new game - it will be saved without cover_art"
+            )
+            try:
+                game = Games.objects.get_or_create(name=name, cover_art=default_cover_path_for_field)
+            except django.db.utils.IntegrityError as e:
+                print(f"Fail unique constraint for game_name. Game already in db. Error signature: '{e}'")
+                return
 
     return game[1]
 
