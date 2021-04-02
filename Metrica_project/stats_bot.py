@@ -6,9 +6,13 @@ from telegram.ext import Dispatcher, CommandHandler, MessageHandler, Filters
 import requests
 import base64
 
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 REGISTRATION_URL = 'https://d62d53c99f46.ngrok.io/users/add_user/'
-ADD_GAME_URL = 'https://21ec826a2f53.ngrok.io/games/add_game_from_bot/'
+ADD_GAME_URL = 'https://rokkoko-metrika-1.ejemplo.me/games/add_game_from_bot/'
+
 
 class StatsBot:
     def __init__(self, token):
@@ -27,15 +31,19 @@ class StatsBot:
         self.dispatcher.process_update(update)
         print('Stats request processed successfully', update.update_id)
 
+
 def add_game_command(update, context):
     context.user_data["last_command"] = "GAME"
     update.message.reply_text(
         f'Добавить игру',
         reply_markup=ForceReply())
 
+
 def process_add_game_command(update, context):
     game = update.message.text
-    response = requests.post(ADD_GAME_URL, json={"game_name": str(game), "avatar": base64.b64encode(update.message.photo[-1].get_file())})
+    avatar = update.message.photo[-1].get_file()
+    response = requests.post(ADD_GAME_URL, data={'game_name': 'test'}, files={'avatar': avatar.download_as_bytearray()})
+    # response = requests.post(ADD_GAME_URL, json={"game_name": str(game), "avatar": base64.b64encode(update.message.photo[-1].get_file())})
     update.message.reply_text(response.text)
 
 
@@ -46,10 +54,12 @@ def register_user_command(update, context):
         f'Зарегистрировать юзера',
         reply_markup=ForceReply())
 
+
 def register_command(update, context):
     user = update.message.text
     response = requests.post(REGISTRATION_URL, json={"user": str(user)})
     update.message.reply_text(response.text)
+
 
 def add_stats_command(update, context):
     # Store the command in context to check later in message processors
