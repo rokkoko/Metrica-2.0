@@ -1,13 +1,13 @@
 from django.db import models
 from users.models import CustomUser
-from django.core.validators import validate_image_file_extension, FileExtensionValidator
+from django.core.validators import validate_image_file_extension
 
 
 class Games(models.Model):
     name = models.CharField('Game name', max_length=100, unique=True)
     cover_art = models.ImageField(
         upload_to='uploads/games_cover/%Y/%m/%d/',
-        null=True, max_length=120,
+        max_length=120,
         validators=[validate_image_file_extension]
     )
 
