@@ -9,6 +9,7 @@ from django.views import View
 from django.views.generic import ListView, DetailView
 from django.views.generic import DetailView
 from django.utils.decorators import method_decorator
+from django.utils.datastructures import MultiValueDictKeyError
 from django.views.generic.edit import CreateView, UpdateView
 from games.db_actions import get_game_id_by_name, get_game_object_by_id, \
     add_game_into_db, add_game_into_db_single_from_bot, add_game_session_into_db, add_scores
@@ -87,8 +88,13 @@ class GamesAddView(CreateView):
 class GamesAddBotView(View):
     def post(self, request):
         game_name = request.POST["game_name"]
-        avatar = request.FILES["avatar"]
-        result = add_game_into_db_single_from_bot(game_name, avatar)
+        try:
+            avatar = request.FILES["avatar"]
+        except MultiValueDictKeyError as e:
+            print("No image for cover provided. Apply default cover for case 'new game'")
+            result = add_game_into_db_single_from_bot(game_name)
+        else:
+            result = add_game_into_db_single_from_bot(game_name, avatar)
         new_game_msg = f'New game "{game_name}" added to Metrica!'
         exist_game_msg = f'Game "{game_name}" already tracking by Metrica!'
 
