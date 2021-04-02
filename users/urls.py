@@ -12,11 +12,9 @@ urlpatterns = [
     path('register/', views.UsersCreateView.as_view(), name='users_register'),
     path('update/<int:pk>/', views.UsersUpdateView.as_view(), name='users_update'),
 
-
     # create and update user profile by tg link
     path('add_user/', views.add_user_view, name='add_user_from_bot'),
     path('reg_cont/<int:pk>/' + str(uuid.uuid4()), views.UserUpdateViewFromBot.as_view(), name='reg_cont'),
-
 
     path('invite_to_register/', views.invite_to_register, name='invite_to_register'),
     path('send_email_to_admin/', views.feedback_view, name='feedback_to_email'),

@@ -3,6 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from users.forms import CustomUserCreationForm, CustomUserUpdateForm
 from .models import CustomUser, ClaimTopic, Claim
 
+
 class CustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
     form = CustomUserUpdateForm

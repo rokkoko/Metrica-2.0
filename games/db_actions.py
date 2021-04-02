@@ -29,7 +29,6 @@ def get_game_names_list():
     return _list
 
 
-
 def get_game_object_by_id(game_id):
     """
     :param game_id: int() id of the game in db

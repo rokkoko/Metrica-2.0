@@ -4,7 +4,6 @@ from .models import CustomUser
 
 
 class CustomUserCreationForm(UserCreationForm):
-
     class Meta(UserCreationForm):
         model = CustomUser
         fields = [
@@ -14,7 +13,6 @@ class CustomUserCreationForm(UserCreationForm):
             'email',
             'avatar',
         ]
-
 
 
 class CustomUserUpdateForm(UserChangeForm):
@@ -27,6 +25,7 @@ class CustomUserUpdateForm(UserChangeForm):
             'email',
             'avatar',
         ]
+
 
 class FeedbackForm(forms.Form):
     subject = forms.ChoiceField()

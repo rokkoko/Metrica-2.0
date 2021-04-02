@@ -32,7 +32,7 @@ class UsersLoginView(LoginView):
         Override classmethod to achieve redirect to profile page in buil-in auth CBV
         :return:
         """
-        url = reverse_lazy('users:users_detail', args=[self.request.user.id,])
+        url = reverse_lazy('users:users_detail', args=[self.request.user.id, ])
         return url
 
 

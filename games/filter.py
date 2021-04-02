@@ -23,7 +23,7 @@ class GamesFilter(django_filters.FilterSet):
 
     class Meta:
         model = GameSession
-        fields = ["game", "created_at",]
+        fields = ["game", "created_at", ]
 
     def get_month(self, queryset, field_name, month):
         return queryset.filter(created_at__month=month)
