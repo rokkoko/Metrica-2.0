@@ -9,6 +9,7 @@ from django.views import View
 from django.views.generic import ListView, DetailView
 from django.views.generic import DetailView
 from django.utils.decorators import method_decorator
+from django.utils.datastructures import MultiValueDictKeyError
 from django.views.generic.edit import CreateView, UpdateView
 from games.db_actions import get_game_id_by_name, get_game_object_by_id, \
     add_game_into_db, add_game_into_db_single_from_bot, add_game_session_into_db, add_scores
@@ -16,6 +17,9 @@ from django.views.decorators.csrf import csrf_exempt
 from Metrica_project.stats_bot import StatsBot
 from django.db.models import Sum
 from games.filter import GamesFilter
+from PIL import Image
+from io import BytesIO
+import base64
 
 stats_bot_token = os.getenv("STATS_BOT_TOKEN_TEST")
 stats_bot = StatsBot(stats_bot_token)
@@ -83,10 +87,14 @@ class GamesAddView(CreateView):
 @method_decorator(csrf_exempt, name='dispatch')
 class GamesAddBotView(View):
     def post(self, request):
-        request_raw = request.body
-        request_json = json.loads(request_raw)
-        game_name = request_json["game_name"]
-        result = add_game_into_db_single_from_bot(game_name)
+        game_name = request.POST["game_name"]
+        try:
+            avatar = request.FILES["avatar"]
+        except MultiValueDictKeyError as e:
+            print("No image for cover provided. Apply default cover for case 'new game'")
+            result = add_game_into_db_single_from_bot(game_name)
+        else:
+            result = add_game_into_db_single_from_bot(game_name, avatar)
         new_game_msg = f'New game "{game_name}" added to Metrica!'
         exist_game_msg = f'Game "{game_name}" already tracking by Metrica!'
 

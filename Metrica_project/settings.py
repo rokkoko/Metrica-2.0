@@ -33,7 +33,7 @@ DEBUG = bool(os.getenv('DEBUG_MODE'))
 ALLOWED_HOSTS = [
     'a-metrica.herokuapp.com',
     '127.0.0.1',
-    'rokkoko-metrika-1.ejemplo.me',
+    os.getenv('ALLOWED_HOST_PGROK'),
     'testserver',
 ]
 
@@ -106,10 +106,10 @@ WSGI_APPLICATION = 'Metrica_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME_HEROKU'),
-        'USER': os.getenv('DB_USER_HEROKU'),
-        'PASSWORD': os.getenv('DB_PASSWORD_HEROKU'),
-        'HOST': os.getenv('DB_HOST_HEROKU'),
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
         'PORT': '5432',
         'TEST': {
             'NAME': os.getenv('TEST_DB'),
@@ -175,6 +175,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+MEDIA_UPLOADS_ROOT = MEDIA_ROOT + '\\uploads'
 
 ANYMAIL = {
     # (exact settings here depend on your ESP...)

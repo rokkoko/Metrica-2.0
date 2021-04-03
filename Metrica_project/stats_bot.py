@@ -4,9 +4,18 @@ from .income_msg_parser import parse_message
 from telegram import Bot, Update, ForceReply
 from telegram.ext import Dispatcher, CommandHandler, MessageHandler, Filters, ConversationHandler
 import requests
+import os
+from dotenv import load_dotenv, find_dotenv
 
-REGISTRATION_URL = 'https://d62d53c99f46.ngrok.io/users/add_user/'
-ADD_GAME_URL = 'https://rokkoko-metrika-1.ejemplo.me/games/add_game_from_bot/'
+load_dotenv(find_dotenv())
+
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+
+USER_REGISTRATION_URL = os.getenv('USER_REGISTRATION_URL')
+ADD_GAME_URL = os.getenv('ADD_GAME_URL')
+
 
 GAME_NAME, GAME_COVER = range(2)
 
@@ -29,6 +38,17 @@ class StatsBot:
         self.dispatcher.process_update(update)
         print('Stats request processed successfully', update.update_id)
 
+def add_game_command(update, context):
+    context.user_data["last_command"] = "GAME"
+    update.message.reply_text(
+        f'Добавить игру',
+        reply_markup=ForceReply())
+
+def process_add_game_command(update, context):
+    game = update.message.text
+    avatar = update.message.photo[-1].get_file()
+    response = requests.post(ADD_GAME_URL, data={'game_name': 'test'}, files={'avatar': avatar.download_as_bytearray()})
+    update.message.reply_text(response.text)
 
 def register_user_command(update, context):
     # Store the command in context to check later in message processors
@@ -40,7 +60,7 @@ def register_user_command(update, context):
 
 def register_command(update, context):
     user = update.message.text
-    response = requests.post(REGISTRATION_URL, json={"user": str(user)})
+    response = requests.post(USER_REGISTRATION_URL, json={"user": str(user)})
     update.message.reply_text(response.text)
 
 
