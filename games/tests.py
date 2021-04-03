@@ -20,9 +20,8 @@ class GamesTestCase(TestCase):
 
     def test_detail_view(self):
         new_game = Games.objects.create(name='Test game 2')
-        response = self.client.get(reverse_lazy('games:games_detail', args=[2,]))
+        response = self.client.get(reverse_lazy('games:games_detail', args=[2, ]))
         self.assertEqual(response.context['game'].name, new_game.name)
-
 
     def test_add_game(self):
         response = self.client.get(reverse_lazy('games:games_index'))
@@ -31,4 +30,3 @@ class GamesTestCase(TestCase):
             response.context['games'].order_by('name'),
             ['<Games: Test game>', '<Games: Test game 2>']
         )
-

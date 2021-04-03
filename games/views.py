@@ -44,8 +44,9 @@ class GamesDetailView(DetailView):
         users = CustomUser.objects.distinct().filter(scores__game_session__game__pk=self.kwargs['pk'])
 
         users_with_scores = list(map(lambda user: dict(name=user.username,
-                                      score=GameScores.objects.filter(game_session__game__pk=self.kwargs['pk']).filter(
-                                          user=user).aggregate(Sum('score'))['score__sum']), users))
+                                                       score=GameScores.objects.filter(
+                                                           game_session__game__pk=self.kwargs['pk']).filter(
+                                                           user=user).aggregate(Sum('score'))['score__sum']), users))
 
         context["users"] = users_with_scores
 

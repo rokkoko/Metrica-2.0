@@ -11,7 +11,7 @@
     </div>
 
     <form method="get">
-		{% bootstrap_form filter.form %}
+        {% bootstrap_form filter.form %}
         {% if user.is_authenticated %}
             <div class="form-check">
                 <label class="form-check" for="id_self_game_sessions">My game sessions</label>
@@ -42,7 +42,7 @@
                         </td>
                         <td>
                             <ul class="list-unstyled">
-                                    <li>{{ game_session.created_at }}</li>
+                                <li>{{ game_session.created_at }}</li>
                             </ul>
                         </td>
                         <td>

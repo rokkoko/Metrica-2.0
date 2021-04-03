@@ -3,6 +3,7 @@ import django
 from django.core.mail import send_mail
 
 import sys
+
 # sys.path.append('C:\\Users\home_\PycharmProjects\Metrica_project')  # add <path_to_script> to system path for correct modules import.
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'Metrica_project.settings'  # set Django-needed settings module

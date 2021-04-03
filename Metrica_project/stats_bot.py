@@ -38,11 +38,13 @@ class StatsBot:
         self.dispatcher.process_update(update)
         print('Stats request processed successfully', update.update_id)
 
+
 def add_game_command(update, context):
     context.user_data["last_command"] = "GAME"
     update.message.reply_text(
         f'Добавить игру',
         reply_markup=ForceReply())
+
 
 def process_add_game_command(update, context):
     game = update.message.text

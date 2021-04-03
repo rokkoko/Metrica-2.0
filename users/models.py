@@ -17,7 +17,6 @@ class CustomUser(AbstractUser):
         return '/users/'
 
 
-
 class ClaimTopic(models.Model):
     CHOICES = [
         ('adding a game', 'adding a game'),
