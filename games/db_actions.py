@@ -83,7 +83,8 @@ def add_game_into_db_single_from_bot(name, cover=None):
     get_default_cover(full_path, default_cover_download_source)
 
     if not cover:
-        game = Games.objects.get_or_create(name=name, cover_art=default_cover_path_for_field)
+        game = Games.objects.create(name=name, cover_art=default_cover_path_for_field)
+        return game
 
     else:
         file_bytes = cover.read()
@@ -91,24 +92,17 @@ def add_game_into_db_single_from_bot(name, cover=None):
             with open(file_fp, 'wb') as f:
                 f.write(file_bytes)
                 f.close()
-            try:
-                game = Games.objects.get_or_create(name=name, cover_art=cover_path_for_field)
-            except django.db.utils.IntegrityError as e:
-                print(f"Fail unique constraint for game_name. Game already in db. Error signature: '{e}'")
-                return
+                game = Games.objects.create(name=name, cover_art=cover_path_for_field)
+                return game
 
         elif imghdr.what('', file_bytes) is None:
             print(
                 "NON-image file cannot be processed. "
                 "In case with new game - it will be saved without cover_art"
             )
-            try:
-                game = Games.objects.get_or_create(name=name, cover_art=default_cover_path_for_field)
-            except django.db.utils.IntegrityError as e:
-                print(f"Fail unique constraint for game_name. Game already in db. Error signature: '{e}'")
-                return
+            game = Games.objects.create(name=name, cover_art=default_cover_path_for_field)
+            return game
 
-    return game[1]
 
     # REALIZATION with PIL.Image check and file-writing process (class.Image won't write file from NON-image source)
 
