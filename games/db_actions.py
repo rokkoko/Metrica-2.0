@@ -52,14 +52,11 @@ def get_game_object_by_id(game_id):
     return game
 
 
-def add_game_into_db(name):  # TODO refactor need for NOT NULL cover_art field
-    """
-    Insert new game into db
-    :param name: str()-name of the game
-    :return: model object of new added game
-    """
-    game = Games.objects.get_or_create(name=name)[0]
-    return game
+def get_game_object_by_name(game_name):
+    game_object = Games.objects.filter(name=game_name)
+    if game_object:
+        return game_object[0]
+    return game_object
 
 
 def add_game_into_db_single_from_bot(name, cover=None):
@@ -104,24 +101,6 @@ def add_game_into_db_single_from_bot(name, cover=None):
             return game
 
 
-    # REALIZATION with PIL.Image check and file-writing process (class.Image won't write file from NON-image source)
-
-    # try:
-    #     image = PIL.Image.open(io.BytesIO(data.read()))
-    # except PIL.UnidentifiedImageError as e:
-    #     print(f"NON-image file cannot be processed. Error is: '{e}'.")
-    #     return
-    # else:
-    #     image.save(full_path + file_name)
-    #
-    #     try:
-    #         game = Games.objects.get_or_create(name=name, cover_art=db_path)
-    #     except django.db.utils.IntegrityError:
-    #         return
-    #
-    #     return game[1]
-
-
 def add_game_session_into_db(game):
     """
     Insert new game session object (row) into db
@@ -148,7 +127,9 @@ def add_scores(game_name, score_pairs: dict):
     except ValueError:
         return "Negative score is impossible"
 
-    game = add_game_into_db(game_name)
+    game = get_game_object_by_name(game_name)
+    if not game:
+        return f"Game '{game_name}' isn't tracked by Metrica! Please, register this game first."
     game_session_object = add_game_session_into_db(game)
     users_ids = add_user_into_db_from_score_pairs(score_pairs)
     result_msg_dict = dict()
