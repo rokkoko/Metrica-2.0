@@ -14,6 +14,6 @@ urlpatterns = [
     path('<int:pk>/', views.GamesDetailView.as_view(), name='games_detail'),
     path('add_game/', views.GamesAddView.as_view(), name='add_game'),
     path('add_game_from_bot/', views.GamesAddBotView.as_view(), name='add_game_from_bot'),
-    path('game_check_for_bot/', views.GameCheckForBot.as_view(), name='game_check_for_bot'),
+    path('game_check_for_bot/', views.GameCheck.as_view(), name='game_check'),
     path('stats_proceed/' + stats_bot_token, views.stats_proceed_view, name='stats_proceed_from_bot'),
 ]

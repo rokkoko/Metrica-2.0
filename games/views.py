@@ -96,9 +96,9 @@ class GamesAddBotView(View):
 
 
 @method_decorator(csrf_exempt, name="dispatch")
-class GameCheckForBot(View):
-    def post(self, request):
-        game_name = request.POST["game_name"]
+class GameCheck(View):
+    def get(self, request):
+        game_name = request.GET.get("game_name")
         result = {"exist_game": get_game_id_by_name(game_name)}
 
         return JsonResponse(result)

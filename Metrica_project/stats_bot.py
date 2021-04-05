@@ -160,7 +160,7 @@ def add_game_start(update, context):
 def game_name(update, context):
     context.user_data['game_name'] = update.message.text
 
-    response = requests.post(GAME_CHECK_URL, data={'game_name': context.user_data['game_name']})
+    response = requests.get(GAME_CHECK_URL, params={'game_name': context.user_data['game_name']})
 
     if response.json()["exist_game"]:
         update.message.reply_text(f'Game "{context.user_data["game_name"]}" already tracking by Metrica!')
