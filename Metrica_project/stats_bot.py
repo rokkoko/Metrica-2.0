@@ -1,5 +1,6 @@
 import datetime as date
 from games.db_actions import stats_repr, add_scores, get_game_names_list, get_game_id_by_name
+from games.models import Games
 from .income_msg_parser import parse_message
 from telegram import Bot, Update, ForceReply
 from telegram.ext import Dispatcher, CommandHandler, MessageHandler, Filters, ConversationHandler
@@ -10,11 +11,12 @@ from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 
 import logging
-
 logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger('Metrica_logger')
 
 USER_REGISTRATION_URL = os.getenv('USER_REGISTRATION_URL')
 ADD_GAME_URL = os.getenv('ADD_GAME_URL')
+GAME_CHECK_URL = os.getenv('GAME_CHECK_URL')
 
 
 GAME_NAME, GAME_COVER = range(2)
@@ -34,10 +36,9 @@ class StatsBot:
 
     def process_update(self, request):
         update = Update.de_json(request, self.bot)
-        print('Update decoded', update.update_id)
+        logger.debug(f'Update decoded: {update.update_id}')
         self.dispatcher.process_update(update)
-        print('Stats request processed successfully', update.update_id)
-
+        logger.debug(f'Stats request processed successfully: {update.update_id}')
 
 def add_game_command(update, context):
     context.user_data["last_command"] = "GAME"
@@ -157,23 +158,27 @@ def add_game_start(update, context):
 
 def game_name(update, context):
     context.user_data['game_name'] = update.message.text
-    update.message.reply_text('Send game cover')
 
-    return GAME_COVER
+    response = requests.post(GAME_CHECK_URL, data={'game_name': context.user_data['game_name']})
+
+    if response.json()["exist_game"]:
+        update.message.reply_text(f'Game "{context.user_data["game_name"]}" already tracking by Metrica!')
+        return cancel(update)
+    else:
+        update.message.reply_text('Send game cover')
+        return GAME_COVER
 
 
 def game_cover(update, context):
     game_name = context.user_data["game_name"]
     photo = update.message.photo[-1].get_file()
     requests.post(ADD_GAME_URL, data={'game_name': game_name}, files={'avatar': photo.download_as_bytearray()})
-    update.message.reply_text('Game created')
-
+    update.message.reply_text(f'New game "{game_name}" added to Metrica!')
     return ConversationHandler.END
 
 
 def cancel(update):
-    update.message.reply_text('Cancel')
-
+    update.message.reply_text('End dialog')
     return ConversationHandler.END
 
 
