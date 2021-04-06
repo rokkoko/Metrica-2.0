@@ -13,7 +13,7 @@ from django.views.generic.edit import CreateView
 from games.db_actions import get_game_id_by_name, add_game_into_db_single_from_bot
 from django.views.decorators.csrf import csrf_exempt
 from Metrica_project.stats_bot import StatsBot
-from django.db.models import Sum
+from django.db.models import Sum, Count
 from games.filter import GamesFilter
 import logging
 
@@ -38,7 +38,12 @@ class GamesDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        users = CustomUser.objects.distinct().filter(scores__game_session__game__pk=self.kwargs['pk'])
+
+        users = CustomUser.objects.prefetch_related("scores") \
+            .filter(scores__game_session__game__id=self.kwargs["pk"]) \
+            .annotate(played_games_count=Count("scores__game_session"))
+
+        context['played_games_by_players'] = users
 
         users_with_scores = list(map(lambda user: dict(name=user.username,
                                                        score=GameScores.objects.filter(
@@ -51,6 +56,9 @@ class GamesDetailView(DetailView):
         context['server_data'] = {
             "users": users_with_scores
         }
+
+        # Аннотация количества сыгранных сессий для каждой игры для каждого юзера
+        # CustomUser.objects.annotate(played_games_count=Count("scores__game_session"))
 
         return context
 
