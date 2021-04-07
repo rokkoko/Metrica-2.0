@@ -19,6 +19,7 @@
                     <th scope="col">Email</th>
                     <th>Last 5 games played</th>
                     <th>Day played</th>
+                    <th>Frequency</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -39,11 +40,15 @@
                     </td>
 
                     <td>
-                        {% for day in weekdays_played %}
+                        {% for day in sessions %}
                             {{ day.weekday }}
                         {% endfor %}
                     </td>
-
+                    <td>
+                        {% for elem in frequency.items %}
+                            {{ elem }}
+                        {% endfor %}
+                    </td>
                 </tr>
                 </tbody>
             </table>
