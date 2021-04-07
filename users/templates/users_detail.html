@@ -18,6 +18,7 @@
                     <th scope="col">Name</th>
                     <th scope="col">Email</th>
                     <th>Last 5 games played</th>
+                    <th>Day played</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -36,6 +37,13 @@
                             <a href={% url 'games:games_detail' game.pk %}>{{ game }}</a>
                         {% endfor %}
                     </td>
+
+                    <td>
+                        {% for day in weekdays_played %}
+                            {{ day.weekday }}
+                        {% endfor %}
+                    </td>
+
                 </tr>
                 </tbody>
             </table>

@@ -10,6 +10,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
 import users.models
 from games.models import Games, GameScores, GameSession
+from django.db.models.functions import ExtractIsoWeekDay
 from .forms import CustomUserCreationForm, CustomUserUpdateForm, FeedbackForm
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
@@ -85,6 +86,10 @@ class UsersDetailView(LoginRequiredMixin, DetailView):
                 'Email'
             )
         )
+
+        self_game_sessions = GameSession.objects.filter(scores__user__pk=self.kwargs["pk"])
+
+        context['weekdays_played'] = self_game_sessions.annotate(weekday=ExtractIsoWeekDay("created_at"))
 
         context["last_five_games_played"] = Games.objects.distinct().filter(
             sessions__scores__user__id=self.kwargs['pk']
