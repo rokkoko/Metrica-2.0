@@ -296,6 +296,8 @@ class JwtUserView(View):
 
         user = users.models.CustomUser.objects.filter(id=payload['id']).first()
 
+        authenticate(requsest, username=payload["username"], password=payload["password"])
+
         login(requsest, user)
 
         return HttpResponseRedirect(reverse_lazy('users:users_detail', args=[payload['id']]))
