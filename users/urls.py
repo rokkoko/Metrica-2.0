@@ -19,4 +19,7 @@ urlpatterns = [
     path('invite_to_register/', views.invite_to_register, name='invite_to_register'),
     path('send_email_to_admin/', views.feedback_view, name='feedback_to_email'),
     path('contact_us/', views.ClaimCreateView.as_view(), name='feedback'),
+
+    path('jwt/', views.JwtLoginView.as_view()),
+    path('jwt/user/', views.JwtUserView.as_view()),
 ]
