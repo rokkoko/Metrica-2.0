@@ -18,6 +18,7 @@
                     <th scope="col">Name</th>
                     <th scope="col">Email</th>
                     <th>Last 5 games played</th>
+                    <th>Summary score</th>
                     <th>Day played</th>
                     <th>Frequency</th>
                 </tr>
@@ -38,7 +39,13 @@
                             <a href={% url 'games:games_detail' game.pk %}>{{ game }}</a>
                         {% endfor %}
                     </td>
-
+                    <td>
+                        {% for game in last_five_games_played %}
+                            <div>
+                                {{ game.player_score }}
+                            </div>
+                        {% endfor %}
+                    </td>
                     <td>
                         {% for day in sessions %}
                             {{ day.weekday }}
