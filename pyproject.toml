@@ -24,6 +24,7 @@ django-debug-toolbar = "^3.2"
 Pillow = "^8.1.2"
 django-filter = "^2.4.0"
 Faker = "^6.6.3"
+PyJWT = "^2.0.1"
 
 [tool.poetry.dev-dependencies]
 

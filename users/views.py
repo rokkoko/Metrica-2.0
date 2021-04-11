@@ -1,7 +1,8 @@
 import os
 from django.shortcuts import render
-from django.urls import reverse_lazy
-from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse_lazy, reverse
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, JsonResponse
+
 from django.views.generic.list import ListView
 from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, UpdateView
@@ -19,7 +20,16 @@ from django.core import serializers
 from django.core.mail import send_mail
 from django.contrib import messages
 from dotenv import load_dotenv, find_dotenv
+from django.views import View
+from django.core.exceptions import ObjectDoesNotExist
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+import jwt
+import datetime
+from django.conf import settings
+from django.contrib.auth import authenticate, login
 from users.utils import get_player_calendar
+
 
 load_dotenv(find_dotenv())
 URL_PATH = 'https://a-metrica.herokuapp.com'
@@ -220,3 +230,57 @@ def add_user_view(request):
     ) if new_user_pk else HttpResponse(
         f"Вы уже зарегистрированы. Можете перейти на сайт по этой ссылке {request.build_absolute_uri(reverse_lazy('index'))}"
     )
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class JwtLoginView(View):
+    def post(self, request):
+        request_json_decoded = json.loads(request.body)
+        username = request_json_decoded['username']
+        password = request_json_decoded['password']
+
+        user = users.models.CustomUser.objects.filter(username=username).first()
+
+        payload = {
+            "id": user.pk,
+            "username": user.username,
+            "password": password,
+            "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=1),
+            "iat": datetime.datetime.utcnow()
+        }
+
+        token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
+
+        response = HttpResponse()
+
+        response.set_cookie("jwt", token, httponly=True, secure=True, expires=300)
+
+        if user is None:
+            # raise ObjectDoesNotExist('User not found!')
+            return HttpResponseNotFound('User not found!')
+
+        if not user.check_password(password):
+            # raise ObjectDoesNotExist('Incorrect password!')
+            return HttpResponseNotFound('Incorrect password!')
+        return response
+
+@method_decorator(csrf_exempt, name='dispatch')
+class JwtUserView(View):
+    def get(self, requsest):
+        token = requsest.COOKIES.get('jwt')
+
+        if not token:
+            return HttpResponse('No auth')
+
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+        except:
+            return HttpResponse('Fake token!')
+
+        user = users.models.CustomUser.objects.filter(id=payload['id']).first()
+
+        authenticate(requsest, username=payload["username"], password=payload["password"])
+
+        login(requsest, user)
+
+        return HttpResponseRedirect(reverse_lazy('users:users_detail', args=[payload['id']]))
