@@ -1,9 +1,9 @@
 import sys
 import os
 import io
-import django
-import urllib.request
 import requests
+
+import django
 from PIL import Image
 
 
