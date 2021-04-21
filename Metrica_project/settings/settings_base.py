@@ -43,9 +43,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'Metrica_project',
+    'telegram_bot',
     'users',
     'games',
+
     'bootstrap4',
     'anymail',
     'django_filters',
@@ -218,3 +221,6 @@ CACHES = {
 CACHE_MIDDLEWARE_ALIAS = 'default'
 CACHE_MIDDLEWARE_KEY_PREFIX = ''
 CACHE_MIDDLEWARE_SECONDS = 600
+
+#  Url for inner requests between "bot-app" and others Django apps
+PROJECT_ROOT_URL = os.getenv('PROJECT_ROOT_URL')
