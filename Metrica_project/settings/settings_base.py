@@ -208,14 +208,6 @@ LOGGING = {
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-    },
-    'db_cache': {
-        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-        'LOCATION': 'table_cache'
-    },
-    'fs_cache': {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': 'C:/Users/home_/PycharmProjects/Metrica/Metrica_project/tmp/django_cache/'
     }
 }
 
