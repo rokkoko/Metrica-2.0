@@ -48,11 +48,12 @@ INSTALLED_APPS = [
     'telegram_bot',
     'users',
     'games',
-    'telegram_bot',
+
     'bootstrap4',
     'anymail',
     'django_filters',
     'django_summernote',
+    'swagger_render',
 ]
 
 MIDDLEWARE = [
@@ -228,3 +229,5 @@ SUMMERNOTE_CONFIG = {
 }
 #  Url for inner requests between "bot-app" and others Django apps
 PROJECT_ROOT_URL = os.getenv('PROJECT_ROOT_URL')
+
+SWAGGER_YAML_FILENAME = '/docs/openapi.yml'
