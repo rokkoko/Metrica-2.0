@@ -48,10 +48,12 @@ INSTALLED_APPS = [
     'telegram_bot',
     'users',
     'games',
+
     'bootstrap4',
     'anymail',
     'django_filters',
     'django_summernote',
+    'swagger_render',
 ]
 
 MIDDLEWARE = [
@@ -155,7 +157,7 @@ STATICFILES_DIRS = [
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
-MEDIA_UPLOADS_ROOT = MEDIA_ROOT + '\\uploads'
+MEDIA_UPLOADS_ROOT = MEDIA_ROOT + '/uploads'
 
 ANYMAIL = {
     # (exact settings here depend on your ESP...)
@@ -227,3 +229,5 @@ SUMMERNOTE_CONFIG = {
 }
 #  Url for inner requests between "bot-app" and others Django apps
 PROJECT_ROOT_URL = os.getenv('PROJECT_ROOT_URL')
+
+SWAGGER_YAML_FILENAME = '/docs/openapi.yml'
