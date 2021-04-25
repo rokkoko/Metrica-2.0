@@ -157,7 +157,7 @@ STATICFILES_DIRS = [
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
-MEDIA_UPLOADS_ROOT = MEDIA_ROOT + '\\uploads'
+MEDIA_UPLOADS_ROOT = MEDIA_ROOT + '/uploads'
 
 ANYMAIL = {
     # (exact settings here depend on your ESP...)
