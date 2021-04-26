@@ -61,6 +61,17 @@ class UsersListView(ListView):
 class UsersDetailView(LoginRequiredMixin, DetailView):
     model = users.models.CustomUser
     template_name = 'users_detail.html'
+    perm_denied_msg = 'Permission denied. Only owner can view profile'
+
+    def get(self, request, *args, **kwargs):
+        """
+        Override super_method to achieve filtering access only to autherized user
+        """
+        # if self.kwargs['pk'] != request.user.pk:
+        if self.get_object().pk != request.user.pk:  # more "django_style" method to call .get_object() for get instance of a model
+            messages.error(request, self.perm_denied_msg)
+            return HttpResponseRedirect(reverse_lazy('users:users_index'))
+        return super().get(self, request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         """
@@ -109,7 +120,7 @@ class UsersUpdateView(LoginRequiredMixin, UpdateView):
     form_class = CustomUserUpdateForm
     template_name = 'user_update.html'
     success_url = reverse_lazy('users:users_index')
-    perm_denied_msg = 'Permission denied. Only owner can change account'
+    perm_denied_msg = 'Permission denied. Only owner can change profile'
 
     def dispatch(self, request, *args, **kwargs):
         if self.kwargs['pk'] != request.user.pk:
