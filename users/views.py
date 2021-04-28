@@ -24,7 +24,7 @@ from dotenv import load_dotenv, find_dotenv
 import jwt
 
 import users.models
-from games.models import Games, GameSession
+from games.models import Games, GameSession, GameScores
 from .forms import CustomUserCreationForm, CustomUserUpdateForm, FeedbackForm
 from users.db_actions import add_user_into_db_simple
 from users.utils import get_player_calendar
@@ -88,10 +88,10 @@ class UsersDetailView(LoginRequiredMixin, DetailView):
         games_data = []
         for game in games:
             sessions_data = []
-            for session in game.sessions.all():
+            for session in game.sessions.filter(scores__user=self.get_object()):
                 session_data = {
                     "date": session.created_at,
-                    "score": 3  # Не знаю как достать скорсы из другой таблицы
+                    "score": GameScores.objects.filter(user=self.get_object()).get(game_session=session).score,
                 }
                 sessions_data.append(session_data)
             game_data = {
