@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     'telegram_bot',
     'users',
     'games',
-    'telegram_bot',
+
     'bootstrap4',
     'anymail',
     'django_filters',
