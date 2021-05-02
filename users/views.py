@@ -107,7 +107,7 @@ class UsersDetailView(LoginRequiredMixin, DetailView):
                 sessions_data.append(session_data)
             game_data = {
                 "name": game.name,
-                "cover": game.cover_art,
+                "cover": game.cover_art.url,
                 "total_score": game.total_score,
                 "times_played": game.times_played,
                 "sessions": sessions_data
