@@ -51,11 +51,22 @@ class UsersLogoutView(LogoutView):
     template_name = 'log_in_out.html'
 
 
-class UsersListView(ListView):
+class UsersListView(LoginRequiredMixin, ListView):
     model = users.models.CustomUser
     template_name = 'users_index.html'
     context_object_name = 'users_list'
 
+
+    def get_queryset(self):
+        """
+        Override parent method to get custom queryset depends on 'friendship' field of a request.user
+        :return: only friends of request.user or all() for request.user.is_staff=True
+        """
+        if self.request.user.is_staff:
+            return users.models.CustomUser.objects.all()
+        self.friends_list = list(self.request.user.friendship.values_list('username', flat=True))
+        result = users.models.CustomUser.objects.filter(username__in=self.friends_list)
+        return result.union(users.models.CustomUser.objects.filter(pk=self.request.user.pk))
 
 class UsersDetailView(LoginRequiredMixin, DetailView):
     model = users.models.CustomUser

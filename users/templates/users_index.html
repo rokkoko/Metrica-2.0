@@ -7,7 +7,11 @@
     <div class="row mb-3">
         <div class="col">
             <h4>
-                <a href={% url 'users:users_index' %}>Users</a>
+                {% if user.is_staff %}
+                    <a href="{% url 'users:users_index' %}">Users</a>
+                {% else  %}
+                    <a href="{% url 'users:users_index' %}">You and your friends</a>
+                {% endif %}
             </h4>
         </div>
     </div>
