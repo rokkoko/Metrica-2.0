@@ -64,9 +64,12 @@ class UsersListView(LoginRequiredMixin, ListView):
         """
         if self.request.user.is_staff:
             return users.models.CustomUser.objects.all()
+
         self.friends_list = list(self.request.user.friendship.values_list('username', flat=True))
         result = users.models.CustomUser.objects.filter(username__in=self.friends_list)
+
         return result.union(users.models.CustomUser.objects.filter(pk=self.request.user.pk))
+
 
 class UsersDetailView(LoginRequiredMixin, DetailView):
     model = users.models.CustomUser
