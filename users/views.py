@@ -80,8 +80,10 @@ class UsersDetailView(LoginRequiredMixin, DetailView):
         """
         Override super_method to achieve filtering access only to autherized user
         """
-        # if self.kwargs['pk'] != request.user.pk:
-        if self.get_object().pk != request.user.pk:  # more "django_style" method to call .get_object() for get instance of a model
+        self.friends_pk_list = list(self.request.user.friendship.values_list('pk', flat=True))
+        if self.get_object().pk != request.user.pk\
+                and self.get_object().pk not in self.friends_pk_list\
+                and not request.user.is_staff:  # more "django_style" method to call .get_object() for get instance of a model
             messages.error(request, self.perm_denied_msg)
             return HttpResponseRedirect(reverse_lazy('users:users_index'))
         return super().get(self, request, *args, **kwargs)
