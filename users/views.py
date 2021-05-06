@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.views.generic.list import ListView, View
 from django.views.generic import DetailView
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView, FormView
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models.functions import ExtractIsoWeekDay
@@ -25,7 +25,7 @@ import jwt
 
 import users.models
 from games.models import Games, GameSession, GameScores
-from .forms import CustomUserCreationForm, CustomUserUpdateForm, FeedbackForm
+from .forms import CustomUserCreationForm, CustomUserUpdateForm, FeedbackForm, CustomUserAddFriendForm
 from users.db_actions import add_user_into_db_simple
 from users.utils import get_player_calendar
 
@@ -107,20 +107,38 @@ class UsersDetailView(LoginRequiredMixin, DetailView):
                 'Email'
             )
         )
+        if self.request.user.pk != self.kwargs["pk"]:
+            games = Games.objects.prefetch_related('sessions').filter(
+                sessions__scores__user__pk=self.kwargs['pk'],
+                sessions__is_private=False,
+            ).distinct().annotate(total_score=Sum("sessions__scores__score"), times_played=Count("sessions"))
+        else:
+            games = Games.objects.prefetch_related('sessions').filter(
+                sessions__scores__user__pk=self.kwargs['pk'],
+            ).distinct().annotate(total_score=Sum("sessions__scores__score"), times_played=Count("sessions"))
 
-        games = Games.objects.prefetch_related('sessions').filter(
-            sessions__scores__user__pk=self.kwargs['pk']
-        ).distinct().annotate(total_score=Sum("sessions__scores__score"), times_played=Count("sessions"))
 
         games_data = []
         for game in games:
             sessions_data = []
-            for session in game.sessions.filter(scores__user=self.get_object()):
-                session_data = {
-                    "date": session.created_at,
-                    "score": GameScores.objects.filter(user=self.get_object()).get(game_session=session).score,
-                }
-                sessions_data.append(session_data)
+            if self.request.user.pk != self.kwargs['pk']:
+                for session in game.sessions.filter(scores__user=self.get_object(), is_private=False):
+                    session_data = {
+                        "date": session.created_at,
+                        "score": GameScores.objects.filter(user=self.get_object()).get(game_session=session).score,
+                    }
+                    sessions_data.append(session_data)
+            else:
+                for session in game.sessions.filter(scores__user=self.get_object()):
+                    session_data = {
+                        "date": session.created_at,
+                        "score": GameScores.objects.filter(user=self.get_object()).get(game_session=session).score,
+                    }
+                    sessions_data.append(session_data)
+
+            if not sessions_data:
+                continue
+
             game_data = {
                 "name": game.name,
                 "cover": game.cover_art,
@@ -132,14 +150,29 @@ class UsersDetailView(LoginRequiredMixin, DetailView):
 
         context["games"] = games_data
 
-        context["last_five_games_played"] = Games.objects.prefetch_related('sessions').filter(
-            sessions__scores__user__pk=self.kwargs['pk']
-        ).distinct().annotate(player_score=Sum("sessions__scores__score"))
+
+        if self.request.user.pk == self.kwargs['pk']:
+            context["last_five_games_played"] = Games.objects.prefetch_related('sessions').filter(
+                sessions__scores__user__pk=self.kwargs['pk']
+            ).distinct().annotate(player_score=Sum("sessions__scores__score"))
+
+        else:
+            context["last_five_games_played"] = Games.objects.prefetch_related('sessions').filter(
+                sessions__scores__user__pk=self.kwargs['pk'],
+                sessions__is_private=False
+            ).distinct().annotate(player_score=Sum("sessions__scores__score"))
+
 
         context["self_sessions"] = GameSession.objects.prefetch_related('scores').filter(scores__user__id=self.kwargs["pk"])
 
-        self_game_sessions = GameSession.objects.filter(scores__user__pk=self.kwargs["pk"]).\
-            annotate(weekday=ExtractIsoWeekDay("created_at"))
+        if self.request.user.pk == self.kwargs['pk']:
+            self_game_sessions = GameSession.objects.filter(scores__user__pk=self.kwargs["pk"]).\
+                annotate(weekday=ExtractIsoWeekDay("created_at"))
+        else:
+            self_game_sessions = GameSession.objects.filter(
+                scores__user__pk=self.kwargs["pk"],
+                is_private=False
+            ).annotate(weekday=ExtractIsoWeekDay("created_at"))
 
         context['sessions'] = self_game_sessions
 
@@ -166,6 +199,24 @@ class UsersUpdateView(LoginRequiredMixin, UpdateView):
             messages.error(request, self.perm_denied_msg)
             return HttpResponseRedirect(reverse_lazy('users:users_index'))
         return super().dispatch(request, *args, **kwargs)
+
+
+class FriendAddView(LoginRequiredMixin, FormView):
+    # model = users.models.CustomUser
+    form_class = CustomUserAddFriendForm
+    template_name = 'friend_add.html'
+    success_url = reverse_lazy('users:users_index')
+    # perm_denied_msg = 'Permission denied. Only owner can manage friends'
+
+    # def dispatch(self, request, *args, **kwargs):
+    #     if self.kwargs['pk'] != request.user.pk:
+    #         messages.error(request, self.perm_denied_msg)
+    #         return HttpResponseRedirect(reverse_lazy('users:users_index'))
+    #     return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+
+        return super().form_valid(form)
 
 
 def invite_to_register(request):
