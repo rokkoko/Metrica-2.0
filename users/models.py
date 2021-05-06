@@ -8,7 +8,7 @@ from django.urls import reverse_lazy
 
 class CustomUser(AbstractUser):
     avatar = models.ImageField(upload_to='uploads/%Y/%m/%d/', null=True, blank=True)
-    friendship = models.ManyToManyField('self')
+    friendship = models.ManyToManyField('self', blank=True, symmetrical=False)
 
     @admin.display
     def friendship_repr(self):
