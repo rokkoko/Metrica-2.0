@@ -41,3 +41,11 @@ class FeedbackForm(forms.ModelForm):
         widgets = {
             'claim': SummernoteWidget()
         }
+
+
+class CustomUserAddFriendForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = [
+            "friendship",
+        ]
