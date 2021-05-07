@@ -201,22 +201,47 @@ class UsersUpdateView(LoginRequiredMixin, UpdateView):
         return super().dispatch(request, *args, **kwargs)
 
 
-class FriendAddView(LoginRequiredMixin, FormView):
+class FriendAddView(View):
     # model = users.models.CustomUser
     form_class = CustomUserAddFriendForm
     template_name = 'friend_add.html'
     success_url = reverse_lazy('users:users_index')
-    # perm_denied_msg = 'Permission denied. Only owner can manage friends'
+    perm_denied_msg = 'Permission denied. Only owner can manage friends'
+    friendship_succeed_msg  = "You've been succesfully added to '{friend}' friends. '{friend}' now can view your profile page"
+    friendship_exist_msg  = "You're already in '{friend}' friend_list."
 
-    # def dispatch(self, request, *args, **kwargs):
-    #     if self.kwargs['pk'] != request.user.pk:
-    #         messages.error(request, self.perm_denied_msg)
-    #         return HttpResponseRedirect(reverse_lazy('users:users_index'))
-    #     return super().dispatch(request, *args, **kwargs)
+    def post(self, *args, **kwargs):
+        form = CustomUserAddFriendForm(self.request.POST)
+        if form.is_valid():
+            user = self.request.user
+            friends = form.cleaned_data['friendship']
+            for friend in friends:
+                if friend.pk == self.request.user.pk:
+                    continue
+                messages.info(
+                    self.request,
+                    self.friendship_succeed_msg.format(friend=friend.username)
+                ) if not friend.friendship.filter(pk=user.pk).exists() else messages.error(
+                    self.request,
+                    self.friendship_exist_msg.format(friend=friend.username)
+                )
+                friend.friendship.add(user)
+            return HttpResponseRedirect(reverse_lazy('users:users_index'))
+        else:
+            print(form.errors)
+            messages.error(self.request, self.perm_denied_msg)
 
-    def form_valid(self, form):
+            return HttpResponseRedirect(reverse_lazy('users:users_index'))
 
-        return super().form_valid(form)
+    def get(self, *args, **kwargs):
+        form = CustomUserAddFriendForm()
+        form.fields['friendship'].queryset = users.models.CustomUser.objects.exclude(
+            pk=self.request.user.pk
+        ).exclude(
+            friendship__pk=self.request.user.pk
+        )
+
+        return render(self.request, self.template_name, {'form': form})
 
 
 def invite_to_register(request):
