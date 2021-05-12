@@ -4,23 +4,8 @@
     <div class="row mb-3">
         <div class="col">
             <h4>
-                <a href="{% url 'users:users_index' %}">{% if user.is_staff %}Users{% else %}Your wolf pack{% endif %}</a> / {{ object.username }}
-                <a href="{% url 'users:friendship_requests_list' %}">| Friendship requests</a>
+                <a href={% url 'users:users_index' %}>{% if user.is_staff %}Users{% else %}Your wolf pack{% endif %}</a> / {{ object.username }}
             </h4>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col">
-            <canvas id="chart-area" height="300"></canvas>
-            {{ games | json_script:"games" }}
-            <script>
-                const data = JSON.parse(
-                    document.getElementById("games").textContent
-                );
-
-                window.initUserChart(data)
-            </script>
         </div>
     </div>
 
@@ -30,7 +15,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="media">
-                            <img class="mr-3" width="75" src="{{ game.cover }}" alt="game cover">
+                            <img class="mr-3" width="75" src="{{ game.cover.url }}" alt="game cover">
                             <div class="media-body">
                                 <h5 class="mt-0">{{ game.name }}</h5>
                                 <p>Played {{ game.times_played }} times with {{ game.total_score }} score total</p>
