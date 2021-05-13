@@ -87,7 +87,7 @@ class UsersDetailView(LoginRequiredMixin, DetailView):
         """
         Override parent method to add custom attribute for further purposes
         """
-        super().__init__(kwargs)
+        super().__init__()
         self.friends_pk_list = ''
 
     def get(self, request, *args, **kwargs):
