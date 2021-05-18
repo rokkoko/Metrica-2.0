@@ -262,7 +262,7 @@ class FriendRequestListView(LoginRequiredMixin, FormMixin, ListView):
             users.models.FriendshipRequest.objects.filter(
                 from_user=self.request.user,
                 is_accepted=None
-            ).values_list(
+            ).values(
                 'to_user',
                 'from_user__username'
             )
