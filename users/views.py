@@ -81,8 +81,9 @@ class UsersListView(LoginRequiredMixin, ListView):
             messages.info(request, f"You have a friendship request from '{sender}'")
         return super(UsersListView, self).get(request, *args, **kwargs)
 
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super(UsersListView, self).get_context_data()
+    #  Realiztaion websockets from ListView CBV
+    # def get_context_data(self, *, object_list=None, **kwargs):
+    #     context = super(UsersListView, self).get_context_data()
         # Если данные о новых кандидатах в друзья приходят в GET параметрах - достаем их оттуда.
         # if self.request.GET:
         #     context['new_friendship_requests_receivers'] = self.request.GET.get('to_user')
@@ -93,15 +94,15 @@ class UsersListView(LoginRequiredMixin, ListView):
         #     context['new_friendship_requests_receivers'] = self.request.COOKIES.get('new_friends')
 
         #  Альтернативный более безопасный вариант получения данных о новых (нерассмотренных) запросах на дружбу от юзера
-        context['new_friendship_requests_receivers'] = list(
-            users.models.FriendshipRequest.objects.filter(
-                from_user=self.request.user,
-                is_accepted=None
-            ).values_list(
-                'to_user',
-                flat=True)
-        )
-        return context
+        # context['new_friendship_requests_receivers'] = list(
+        #     users.models.FriendshipRequest.objects.filter(
+        #         from_user=self.request.user,
+        #         is_accepted=None
+        #     ).values_list(
+        #         'to_user',
+        #         flat=True)
+        # )
+        # return context
 
     def get_queryset(self):
         """
