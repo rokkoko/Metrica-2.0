@@ -11,6 +11,14 @@
         {% endif %}
     </h4>
 <br>
+    <form method="get">
+        {% bootstrap_form filter.form %}
+        {% bootstrap_button "Показать" button_class="btn-success" %}
+
+<!--    {% for request in filter.qs %}-->
+<!--        {{ request.from_user.username }}<br />-->
+<!--    {% endfor %}-->
+
     {% if income_friendship_requests %}
     <div class="row mb-3">
         <div class="col">
@@ -33,7 +41,8 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for income_fr_req in income_friendship_requests %}
+                {% comment %}{% for income_fr_req in income_friendship_requests %}{% endcomment %}
+                {% for income_fr_req in filter.qs %}
                     <tr>
                         <th scope="row">
                             {{ income_fr_req.from_user.username }}
