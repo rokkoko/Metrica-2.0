@@ -1,7 +1,7 @@
 import django_filters
 
 
-class IncomeFriendshipRequestFilter(django_filters.FilterSet):
+class FriendshipRequestFilter(django_filters.FilterSet):
     is_accepted = django_filters.BooleanFilter(
         lookup_expr='exact',
         label='принятые запросы',
@@ -10,6 +10,6 @@ class IncomeFriendshipRequestFilter(django_filters.FilterSet):
 
     is_rejected = django_filters.BooleanFilter(
         lookup_expr='isnull',
-        label='не рассмотренные запросы',
+        label='нерассмотренные запросы',
         field_name='is_accepted',
     )

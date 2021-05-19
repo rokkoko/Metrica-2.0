@@ -10,15 +10,6 @@
             <a href="{% url 'users:users_index' %}">Your wolf pack</a>
         {% endif %}
     </h4>
-<br>
-    <form method="get">
-        {% bootstrap_form filter.form %}
-        {% bootstrap_button "Показать" button_class="btn-success" %}
-
-<!--    {% for request in filter.qs %}-->
-<!--        {{ request.from_user.username }}<br />-->
-<!--    {% endfor %}-->
-
     {% if income_friendship_requests %}
     <div class="row mb-3">
         <div class="col">
@@ -27,7 +18,11 @@
             </h4>
         </div>
     </div>
-
+<br>
+    <form method="get">
+        {% bootstrap_form filter_income.form %}
+        {% bootstrap_button "Показать" button_class="btn-success" %}
+    </form>
     <div class="row">
         <div class="col">
             <table class="table table-borderless">
@@ -42,7 +37,7 @@
                 </thead>
                 <tbody>
                 {% comment %}{% for income_fr_req in income_friendship_requests %}{% endcomment %}
-                {% for income_fr_req in filter.qs %}
+                {% for income_fr_req in filter_income.qs %}
                     <tr>
                         <th scope="row">
                             {{ income_fr_req.from_user.username }}
@@ -59,16 +54,6 @@
                             {% elif income_fr_req.is_rejected %}
                                 rejected at: {{ income_fr_req.updated_at }}
                             {% endif %}
-
-{% comment %}
-                            {% if income_fr_req.is_accepted is Null %}
-                                <td>
-                                    <a class="btn btn-success" href="{% url 'users:friendship_request_proceed' income_fr_req.id 'acc' %}">Accept</a>
-                                    <a class="btn btn-danger" href="{% url 'users:friendship_request_proceed' income_fr_req.id 'dec' %}">Decline</a>
-                                </td>
-                            {% endif %}
-{% endcomment %}
-
                             {% if income_fr_req.is_accepted is Null %}
                                 <td>
                                     <form method="POST" action="{% url 'users:friendship_request_proceed' income_fr_req.id 'acc' %}">
@@ -110,7 +95,11 @@
             </h4>
         </div>
     </div>
-
+<br>
+<form method="get">
+    {% bootstrap_form filter_outcome.form %}
+    {% bootstrap_button "Показать" button_class="btn-success" %}
+</form>
     <div class="row">
         <div class="col">
             <table class="table table-borderless">
@@ -124,7 +113,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for outcome_fr_req in outcome_friendship_requests %}
+                {% for outcome_fr_req in filter_outcome.qs %}
                     <tr>
                         <th scope="row">
                             {{ outcome_fr_req.to_user.username }}
