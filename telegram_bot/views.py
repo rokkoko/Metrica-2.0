@@ -1,13 +1,13 @@
 import json
-import os
 
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
+import django.conf
 
 from telegram_bot.stats_bot import StatsBot
 
 
-stats_bot_token = os.getenv("STATS_BOT_TOKEN_TEST")
+stats_bot_token = django.conf.settings.BOT_TOKEN
 stats_bot = StatsBot(stats_bot_token)
 
 
