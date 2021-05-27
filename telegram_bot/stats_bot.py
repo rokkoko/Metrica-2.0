@@ -4,7 +4,7 @@ import requests
 import datetime as date
 import logging
 
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 from django.utils.text import format_lazy
 
 from telegram import Bot, Update, ForceReply
@@ -13,6 +13,8 @@ from dotenv import load_dotenv, find_dotenv
 
 from Metrica_project.income_msg_parser import parse_message
 from games.db_actions import stats_repr, add_scores, get_game_names_list, get_game_id_by_name
+from .db_actions import top_3_week_players_repr_public_sessions
+from telegram_bot.models import Chat
 
 load_dotenv(find_dotenv())
 
@@ -35,18 +37,23 @@ class StatsBot:
     def __init__(self, token):
         self.bot = Bot(token)
         self.dispatcher = Dispatcher(self.bot, None, workers=0)
-        self.dispatcher.add_handler(CommandHandler("add", add_stats_command))
-        self.dispatcher.add_handler(CommandHandler("show", show_stats_command))
-        self.dispatcher.add_handler(CommandHandler("register", register_user_command))
-        self.dispatcher.add_handler(conv_handler)
-        self.dispatcher.add_handler(
-            MessageHandler(~Filters.command, process_bot_reply_message))
+        self.dispatcher.add_handler(CommandHandler("add_stats", add_stats_command))
+        self.dispatcher.add_handler(CommandHandler("show_current_stats", show_stats_command))
+        self.dispatcher.add_handler(CommandHandler("register_user", register_user_command))
+        self.dispatcher.add_handler(CommandHandler("set_stats_scheduler", set_weekly_top_players_stats_schedule))
+        self.dispatcher.add_handler(CommandHandler("unset_stats_scheduler", unset_weekly_top_players_stats_schedule))
+        self.dispatcher.add_handler(conv_handler_add_game)
+        self.dispatcher.add_handler(conv_handler_weekly_stats)
+        self.dispatcher.add_handler(MessageHandler(~Filters.command, process_bot_reply_message))
 
     def process_update(self, request):
         update = Update.de_json(request, self.bot)
         logger.debug(f'Update decoded: {update.update_id}')
         self.dispatcher.process_update(update)
         logger.debug(f'Stats request processed successfully: {update.update_id}')
+        chat_id = update.effective_chat.id
+        Chat.objects.get_or_create(chat_id=chat_id)
+
 
 def add_game_command(update, context):
     context.user_data["last_command"] = "GAME"
@@ -60,6 +67,7 @@ def process_add_game_command(update, context):
     avatar = update.message.photo[-1].get_file()
     response = requests.post(ADD_GAME_URL, data={'game_name': game}, files={'avatar': avatar.download_as_bytearray()})
     update.message.reply_text(response.text)
+
 
 def register_user_command(update, context):
     # Store the command in context to check later in message processors
@@ -109,20 +117,22 @@ def is_known_activity_message(update):
 
 
 def process_bot_reply_message(update, context):
-    last_command = context.user_data["last_command"]
+    try:
+        last_command = context.user_data["last_command"]
+        if last_command == 'ADD' and is_scores_message(update):
+            process_add_stats_message(update, context)
+        elif last_command == 'SHOW':
+            if is_scores_message(update):
+                process_wrong_message(update, context)
 
-    if last_command == 'ADD' and is_scores_message(update):
-        process_add_stats_message(update, context)
-    elif last_command == 'SHOW':
-        if is_scores_message(update):
-            process_wrong_message(update, context)
-
-        elif is_known_activity_message(update):
-            process_show_stats_message(update, context)
-        else:
-            process_unknown_message(update, context)
-    elif last_command == 'REGISTER':
-        register_command(update, context)
+            elif is_known_activity_message(update):
+                process_show_stats_message(update, context)
+            else:
+                process_unknown_message(update, context)
+        elif last_command == 'REGISTER':
+            register_command(update, context)
+    except KeyError:
+        update.message.reply_text('Unrecognized command/message')
 
 
 def process_show_stats_message(update, context):
@@ -201,7 +211,7 @@ def default_cover_process(update, context):
     return ConversationHandler.END
 
 
-conv_handler = ConversationHandler(
+conv_handler_add_game = ConversationHandler(
     entry_points=[CommandHandler('add_game', add_game_start)],
     states={
         GAME_NAME: [MessageHandler(Filters.text & ~Filters.command, game_name)],
@@ -212,3 +222,67 @@ conv_handler = ConversationHandler(
         MessageHandler(Filters.text, default_cover_process),
     ]
 )
+
+
+def weekly_stats_start(update, context):
+    update.message.reply_text('What is the name of the game for "top 3 players" you want get?')
+
+    return 0
+
+
+def game_name_for_weekly_stats(update, context):
+    context.user_data['game_name'] = update.message.text
+
+    response = requests.get(GAME_CHECK_URL, params={'game_name': context.user_data['game_name']})
+
+    if response.json()["exist_game"]:
+        update.message.reply_text('What period? (integer -> number of weeks before now)')
+        return 1
+
+    else:
+        update.message.reply_text(f'Game "{context.user_data["game_name"]}" is not registered in Metrica!')
+        return cancel(update, context)
+
+
+def send_stats_message(update, context):
+    game_name = context.user_data["game_name"]
+    period = update.message.text
+    bot_answer = top_3_week_players_repr_public_sessions(game_name, period)
+    update.message.reply_text(bot_answer)
+    return ConversationHandler.END
+
+
+conv_handler_weekly_stats = ConversationHandler(
+    entry_points=[CommandHandler('get_top_3_players_stats', weekly_stats_start)],
+    states={
+        0: [MessageHandler(Filters.text & ~Filters.command, game_name_for_weekly_stats)],
+        1: [MessageHandler(Filters.text, send_stats_message)],
+    },
+    fallbacks=[
+        CommandHandler('cancel', cancel),
+    ]
+)
+
+
+def set_weekly_top_players_stats_schedule(update, context):
+    """
+    Set 'is_stats_deliver_ordered' 'Chat' model to 'True'
+    """
+    chat_id = update.effective_chat.id
+    update.message.reply_text("I will send you 'top players of the week' statistic every monday")
+
+    # Instead of using Model.update() method which is not call Model.save() method and update objects on SQL level
+    # --Chat.objects.filter(chat_id=chat_id).update(is_stats_deliver_ordered=True)--
+    # use 'ORM'-level for updating objects with Model.save() method calling because it's need for 'auto_now' arg of
+    # a model field
+    chat = Chat.objects.get(chat_id=chat_id)
+    chat.is_stats_deliver_ordered = True
+
+
+def unset_weekly_top_players_stats_schedule(update, context):
+    """
+    Set 'is_stats_deliver_ordered' 'Chat' model to 'True'
+    """
+    chat_id = update.effective_chat.id
+    update.message.reply_text("Subscription for stats mailing is canceled. Have a nice day")
+    Chat.objects.filter(chat_id=chat_id).update(is_stats_deliver_ordered=False)

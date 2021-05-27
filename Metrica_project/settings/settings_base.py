@@ -14,6 +14,7 @@ from pathlib import Path
 import os
 
 from dotenv import load_dotenv, find_dotenv
+from celery.schedules import crontab
 
 load_dotenv(find_dotenv())
 
@@ -138,7 +139,7 @@ AUTH_USER_MODEL = 'users.CustomUser'
 
 LANGUAGE_CODE = 'ru-ru'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
@@ -170,7 +171,6 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')  # if you don't already hav
 SERVER_EMAIL = os.getenv('SERVER_EMAIL')  # ditto (default from-email for Django errors)
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
 
 LOGGING = {
     "version": 1,
@@ -221,3 +221,16 @@ SUMMERNOTE_CONFIG = {
 PROJECT_ROOT_URL = os.getenv('PROJECT_ROOT_URL')
 
 SWAGGER_YAML_FILENAME = '/docs/openapi.yml'
+
+BOT_TOKEN = os.getenv("STATS_BOT_TOKEN_TEST")
+
+# Celery settings
+CELERY_BROKER_URL = 'redis://localhost'
+CELERY_RESULT_BACKEND = 'redis://localhost'
+CELERY_BEAT_SCHEDULE = {
+    'send_stats_top_players_msg_every_monday': {
+        'task': 'telegram_bot.tasks.weekly_stats_tg_notice_top_players',
+        'schedule': crontab(minute=0, hour= 16, day_of_week=1),
+    },
+}
+CELERY_TIMEZONE = 'Europe/Moscow'
