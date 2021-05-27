@@ -60,7 +60,6 @@ class GamesDetailView(DetailView):
             if sessions:
                 filtered_users.append(user)
 
-
         context['played_games_by_players'] = filtered_users
 
         private_sessions = GameSession.objects.prefetch_related("scores") \
