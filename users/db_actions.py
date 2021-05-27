@@ -32,8 +32,11 @@ def get_user_id_by_name(name):
     :param name: str() name of requested user
     :return: int()-id of requested user
     """
-    result = CustomUser.objects.get(username=name).pk
-    return result
+    try:
+        return CustomUser.objects.get(username=name).pk
+    except CustomUser.DoesNotExist:
+        return
+
 
 
 def add_user_into_db_simple(username):
