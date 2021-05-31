@@ -136,17 +136,19 @@ class UsersDetailView(LoginRequiredMixin, DetailView):
         for game in games:
             sessions_data = []
             if self.request.user.pk != self.kwargs['pk']:
-                for session in game.sessions.filter(scores__user=self.get_object(), is_private=False):
+                for session in game.sessions.filter(scores__user=self.get_object(), is_private=False).distinct():
                     session_data = {
                         "date": session.created_at,
                         "score": GameScores.objects.filter(user=self.get_object()).get(game_session=session).score,
                     }
                     sessions_data.append(session_data)
             else:
-                for session in game.sessions.filter(scores__user=self.get_object()):
+                for session in game.sessions.filter(scores__user=self.get_object()).distinct():
                     session_data = {
                         "date": session.created_at,
-                        "score": GameScores.objects.filter(user=self.get_object()).get(game_session=session).score,
+                        # "score": GameScores.objects.filter(user=self.get_object()).get(game_session=session).score,
+                        #  "предохранитель" на случай более чем одного "scores" для игровой сессии
+                        "score": GameScores.objects.filter(user=self.get_object(), game_session=session).aggregate(Sum('score')),
                     }
                     sessions_data.append(session_data)
 
