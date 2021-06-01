@@ -222,7 +222,6 @@ class FriendRequestListView(LoginRequiredMixin, FormMixin, ListView):
         """
         context = super().get_context_data()
         # context['outcome_friendship_requests'] = users.models.FriendshipRequest.objects.filter(from_user=self.request.user)
-
         context['filter_income'] = FriendshipRequestFilter(
             self.request.GET,
             queryset=users.models.FriendshipRequest.objects.filter(to_user=self.request.user)
