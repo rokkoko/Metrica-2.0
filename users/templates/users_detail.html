@@ -64,10 +64,7 @@
             <table class="table table-borderless">
                 <thead>
                 <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Email</th>
-                    <th>Last 5 games played</th>
+                    <th>Last {{ object.username }}'s 5 games played</th>
                     <th>Summary score</th>
                     <th>Day played</th>
                     <th>Frequency</th>
@@ -75,18 +72,9 @@
                 </thead>
                 <tbody>
                 <tr>
-                    <th scope="row">
-                        {{ object.id }}
-                    </th>
-                    <td>
-                        {{ object.username }}
-                    </td>
-                    <td>
-                        {{ object.email }}
-                    </td>
                     <td>
                         {% for game in last_five_games_played %}
-                            <a href={% url 'games:games_detail' game.pk %}>{{ game }}</a>
+                            <a href="{% url 'games:games_detail' game.pk %}">{{ game }}</a>
                         {% endfor %}
                     </td>
                     <td>
