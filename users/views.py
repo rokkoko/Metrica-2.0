@@ -11,7 +11,7 @@ from django.views.generic.edit import CreateView, UpdateView, FormMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models.functions import ExtractIsoWeekDay
-from django.db.models import Sum, Count
+from django.db.models import Sum, Count, F
 from django.core import serializers
 from django.core.mail import send_mail
 from django.contrib import messages
@@ -111,6 +111,7 @@ class UsersDetailView(LoginRequiredMixin, DetailView):
         :param kwargs: captured named param from url_disptacher path()
         :return: additional context for template rendering
         """
+        current_user = self.object
         context = super().get_context_data(**kwargs)
         context['json'] = serializers.serialize(
             'json',
@@ -134,29 +135,56 @@ class UsersDetailView(LoginRequiredMixin, DetailView):
 
         games_data = []
         for game in games:
-            sessions_data = []
             if self.request.user.pk != self.kwargs['pk']:
-                for session in game.sessions.filter(scores__user=self.get_object(), is_private=False).distinct():
-                    session_data = {
-                        "date": session.created_at,
-                        "score": GameScores.objects.filter(
-                            user=self.get_object(),
-                            game_session=session
-                        ).aggregate(Sum('score'))['score__sum'],
-                    }
-                    sessions_data.append(session_data)
+
+                sessions_data = list(
+                    game.sessions.filter(
+                        is_private=False,
+                        scores__user=current_user,
+                    ).annotate(
+                        date=F('created_at'),
+                        score=Sum('scores__score')
+                    ).values('date', 'score')
+                )
+                    #  Expensive realization with 'for' loop: each iteration = db calls
+                # for session in game.sessions.filter(scores__user=current_user, is_private=False).distinct():
+                #     session_data = {
+                #         "date": session.created_at,
+                #         "score": GameScores.objects.filter(
+                #             user=current_user,
+                #             game_session=session
+                #         ).aggregate(Sum('score'))['score__sum'],
+                #     }
+                #     sessions_data.append(session_data)
+
             else:
-                for session in game.sessions.filter(scores__user=self.get_object()).distinct():
-                    session_data = {
-                        "date": session.created_at,
-                        # "score": GameScores.objects.filter(user=self.get_object()).get(game_session=session).score,
-                        #  "предохранитель" на случай более чем одного "scores" для игровой сессии
-                        "score": GameScores.objects.filter(
-                            user=self.get_object(),
-                            game_session=session
-                        ).aggregate(Sum('score'))['score__sum'],
-                    }
-                    sessions_data.append(session_data)
+
+                sessions_data = list(
+                    game.sessions.filter(
+                        scores__user=current_user
+                    ).annotate(
+                        date=F('created_at'),
+                        score=Sum('scores__score')
+                    ).values('date', 'score')
+                )
+
+                    #  Expensive realization with 'for' loop: each iteration = db calls
+                # for session in game.sessions.filter(scores__user=current_user).distinct():
+                #     session_data = {
+                #         "date": session.created_at,
+
+                            #  Realization with access through related GameSession object
+                        # "score": session.scores.filter(
+                        #     user=current_user,
+                        # ).aggregate(Sum('score'))['score__sum'],
+
+                            #  Realization with raw access to GameScores object
+                        # "score": GameScores.objects.filter(
+                        #     user=current_user,
+                        #     game_session=session
+                        # ).aggregate(Sum('score'))['score__sum'],
+                    # }
+                    # sessions_data.append(session_data)
 
             if not sessions_data:
                 continue
