@@ -28,7 +28,7 @@ from games.models import Games, GameSession, GameScores
 from .forms import CustomUserCreationForm, FeedbackForm, CustomUserAddFriendForm, CustomUserRemoveFriendForm,\
     FriendshipRequestAcceptForm
 from users.db_actions import add_user_into_db_simple
-from users.utils import get_player_calendar
+from users.utils import get_player_calendar_with_week_day_number, get_player_calendar_with_week_day_name, get_the_most_played_day
 from .filter import FriendshipRequestFilter
 
 load_dotenv(find_dotenv())
@@ -211,7 +211,6 @@ class UsersDetailView(LoginRequiredMixin, DetailView):
                 sessions__is_private=False
             ).distinct().annotate(player_score=Sum("sessions__scores__score"))
 
-
         context["self_sessions"] = GameSession.objects.prefetch_related('scores').filter(scores__user__id=self.kwargs["pk"])
 
         if self.request.user.pk == self.kwargs['pk']:
@@ -223,9 +222,11 @@ class UsersDetailView(LoginRequiredMixin, DetailView):
                 is_private=False
             ).annotate(weekday=ExtractIsoWeekDay("created_at"))
 
-        context['sessions'] = self_game_sessions
+        context['sessions'] = self_game_sessions #  unclaimed yet
 
-        context["frequency"] = get_player_calendar(self_game_sessions)
+        context['most_active_day'] = get_the_most_played_day(self_game_sessions)
+
+        context["frequency"] = get_player_calendar_with_week_day_name(self_game_sessions)
 
         return context
 
