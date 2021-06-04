@@ -139,7 +139,10 @@ class UsersDetailView(LoginRequiredMixin, DetailView):
                 for session in game.sessions.filter(scores__user=self.get_object(), is_private=False).distinct():
                     session_data = {
                         "date": session.created_at,
-                        "score": GameScores.objects.filter(user=self.get_object(), game_session=session).aggregate(Sum('score')),
+                        "score": GameScores.objects.filter(
+                            user=self.get_object(),
+                            game_session=session
+                        ).aggregate(Sum('score'))['score__sum'],
                     }
                     sessions_data.append(session_data)
             else:
@@ -148,7 +151,10 @@ class UsersDetailView(LoginRequiredMixin, DetailView):
                         "date": session.created_at,
                         # "score": GameScores.objects.filter(user=self.get_object()).get(game_session=session).score,
                         #  "предохранитель" на случай более чем одного "scores" для игровой сессии
-                        "score": GameScores.objects.filter(user=self.get_object(), game_session=session).aggregate(Sum('score')),
+                        "score": GameScores.objects.filter(
+                            user=self.get_object(),
+                            game_session=session
+                        ).aggregate(Sum('score'))['score__sum'],
                     }
                     sessions_data.append(session_data)
 
