@@ -540,7 +540,7 @@ def invite_to_register(request):
 
 
 @csrf_exempt  # disable csrf protection for testing via Postman by using decorator
-def add_user_view(request):
+def add_user_view_through_tg_bot(request):
     if request.method == 'POST':
         request_raw = request.body
         request_json = json.loads(request_raw)
@@ -552,7 +552,7 @@ def add_user_view(request):
         new_user_pk = add_user_into_db_simple(user)
 
     return HttpResponse(
-        f"{site_root_url}{str(reverse_lazy('users:reg_cont', args=[new_user_pk]))}"
+        f"Ссылка на Ваш аккаунт: {site_root_url}{str(reverse_lazy('users:reg_cont', args=[new_user_pk]))}"
     ) if new_user_pk else HttpResponse(
         f"Вы уже зарегистрированы. Можете перейти на сайт по этой ссылке {request.build_absolute_uri(reverse_lazy('index'))}"
     )
@@ -565,7 +565,14 @@ class UserUpdateViewFromBot(UpdateView):
     model = users.models.CustomUser
     form_class = CustomUserCreationForm
     template_name = 'user_update_from_bot.html'
-    success_url = reverse_lazy('index')
+
+    def get_success_url(self):
+        """
+        Override classmethod to achieve redirect to profile page in built-in auth CBV
+        """
+        login(self.request, user=self.object)  # login "just updated from bot" user
+        url = reverse_lazy('users:users_detail', args=[self.kwargs.get('pk'), ])
+        return url
 
 
 def feedback_view(request):
