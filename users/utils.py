@@ -30,7 +30,9 @@ def get_player_calendar_with_week_day_name(game_session_objs_list):
 
 
 def get_the_most_played_day(game_session_objs_list):
-    list_of_played_weekdays = [elem.created_at.strftime('%A') for elem in
-                               game_session_objs_list]  # "No-query" operation. Queryset already cached in variable
-    counter = Counter(list_of_played_weekdays).most_common(1) #  list of tuple with obj and its count
-    return counter[0][0]
+    if game_session_objs_list:
+        list_of_played_weekdays = [elem.created_at.strftime('%A') for elem in
+                                   game_session_objs_list]  # "No-query" operation. Queryset already cached in variable
+        counter = Counter(list_of_played_weekdays).most_common(1) #  list of tuple with obj and its count
+        return counter[0][0]
+    return
