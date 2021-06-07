@@ -34,6 +34,7 @@ from .forms import CustomUserCreationForm, FeedbackForm, CustomUserAddFriendForm
 from users.db_actions import add_user_into_db_simple
 from users.utils import get_player_calendar_with_week_day_number, get_player_calendar_with_week_day_name, get_the_most_played_day
 from .filter import FriendshipRequestFilter
+from .utils import avatar_double_reducer
 
 load_dotenv(find_dotenv())
 site_root_url = settings.PROJECT_ROOT_URL
@@ -352,26 +353,7 @@ class UsersCreateView(CreateView):
         """
         new_user_bounded_form = form.save(commit=False)
         user_avatar = self.request.FILES['avatar']
-        user_avatar_filename = user_avatar.name
-
-        buffer = io.BytesIO()
-        reduced_user_avatar = Image.open(io.BytesIO(user_avatar.read())).reduce(2)  # Reduce file size in twice
-        reduced_user_avatar.save(fp=buffer, format='JPEG')  # save reduced file in bytes stream object to buffer for
-        # further implementation of InMemoryUploadedFile (Django wrapper on sends through form file)
-
-        file_from_buffer = buffer.getvalue()  # access to buffer for getting reduced file
-        stream_file = ContentFile(file_from_buffer)  # Django file wrapper to read streams objects
-
-        in_memory_uploaded_file = InMemoryUploadedFile(
-            file=stream_file,
-            field_name=None,
-            name=user_avatar_filename,
-            content_type='image/jpeg',
-            size=len(stream_file),
-            charset=None
-        )
-
-        new_user_bounded_form.avatar = in_memory_uploaded_file
+        new_user_bounded_form.avatar = avatar_double_reducer(user_avatar)
         new_user_bounded_form.save()
 
         return super().form_valid(form)
