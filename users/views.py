@@ -1,5 +1,4 @@
 import os
-import io
 import json
 import datetime
 
@@ -15,8 +14,6 @@ from django.db.models.functions import ExtractIsoWeekDay
 from django.db.models import Sum, Count, F
 from django.core import serializers
 from django.core.mail import send_mail
-from django.core.files.base import ContentFile
-from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.conf import settings
@@ -25,10 +22,9 @@ from django.views.decorators.csrf import csrf_exempt
 
 from dotenv import load_dotenv, find_dotenv
 import jwt
-from PIL import Image
 
 import users.models
-from games.models import Games, GameSession, GameScores
+from games.models import Games, GameSession
 from .forms import CustomUserCreationForm, FeedbackForm, CustomUserAddFriendForm, CustomUserRemoveFriendForm,\
     FriendshipRequestAcceptForm
 from users.db_actions import add_user_into_db_simple
