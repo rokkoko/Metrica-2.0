@@ -1,4 +1,5 @@
 import os
+import io
 import json
 import datetime
 
@@ -14,6 +15,8 @@ from django.db.models.functions import ExtractIsoWeekDay
 from django.db.models import Sum, Count, F
 from django.core import serializers
 from django.core.mail import send_mail
+from django.core.files.base import ContentFile
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.conf import settings
@@ -22,6 +25,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from dotenv import load_dotenv, find_dotenv
 import jwt
+from PIL import Image
 
 import users.models
 from games.models import Games, GameSession, GameScores
@@ -335,6 +339,43 @@ class UsersCreateView(CreateView):
     form_class = CustomUserCreationForm
     template_name = 'user_register.html'
 
+    def get_success_url(self):
+        """
+        Override parent method for 'autologin' purpose
+        """
+        login(self.request, user=self.object)
+        return super().get_success_url()
+
+    def form_valid(self, form):
+        """
+        Override parent method for reduce in a half size of avatar sent by users
+        """
+        new_user_bounded_form = form.save(commit=False)
+        user_avatar = self.request.FILES['avatar']
+        user_avatar_filename = user_avatar.name
+
+        buffer = io.BytesIO()
+        reduced_user_avatar = Image.open(io.BytesIO(user_avatar.read())).reduce(2)  # Reduce file size in twice
+        reduced_user_avatar.save(fp=buffer, format='JPEG')  # save reduced file in bytes stream object to buffer for
+        # further implementation of InMemoryUploadedFile (Django wrapper on sends through form file)
+
+        file_from_buffer = buffer.getvalue()  # access to buffer for getting reduced file
+        stream_file = ContentFile(file_from_buffer)  # Django file wrapper to read streams objects
+
+        in_memory_uploaded_file = InMemoryUploadedFile(
+            file=stream_file,
+            field_name=None,
+            name=user_avatar_filename,
+            content_type='image/jpeg',
+            size=len(stream_file),
+            charset=None
+        )
+
+        new_user_bounded_form.avatar = in_memory_uploaded_file
+        new_user_bounded_form.save()
+
+        return super().form_valid(form)
+
 
 class UsersUpdateView(LoginRequiredMixin, UpdateView):
     model = users.models.CustomUser
@@ -547,6 +588,7 @@ def add_user_view_through_tg_bot(request):
         user = request_json['user']
         new_user_pk = add_user_into_db_simple(user)
 
+    #  TODO check this rudimentary method
     if request.method == 'GET':
         user = request.GET.get('user')
         new_user_pk = add_user_into_db_simple(user)
