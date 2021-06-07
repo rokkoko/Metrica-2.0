@@ -588,11 +588,6 @@ def add_user_view_through_tg_bot(request):
         user = request_json['user']
         new_user_pk = add_user_into_db_simple(user)
 
-    #  TODO check this rudimentary method
-    if request.method == 'GET':
-        user = request.GET.get('user')
-        new_user_pk = add_user_into_db_simple(user)
-
     return HttpResponse(
         f"Ссылка на Ваш аккаунт: {site_root_url}{str(reverse_lazy('users:reg_cont', args=[new_user_pk]))}"
     ) if new_user_pk else HttpResponse(
