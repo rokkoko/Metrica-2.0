@@ -16,6 +16,10 @@ DATABASES = {
     }
 }
 
+INTERNAL_IPS = [
+    'https://a-metrica.herokuapp.com/'
+    ]
+
 # MIDDLEWARE.insert(0, 'django.middleware.cache.UpdateCacheMiddleware')
 # MIDDLEWARE.append('django.middleware.cache.FetchFromCacheMiddleware')
 
