@@ -16,8 +16,8 @@ DATABASES = {
     }
 }
 
-MIDDLEWARE.insert(0, 'django.middleware.cache.UpdateCacheMiddleware')
-MIDDLEWARE.append('django.middleware.cache.FetchFromCacheMiddleware')
+# MIDDLEWARE.insert(0, 'django.middleware.cache.UpdateCacheMiddleware')
+# MIDDLEWARE.append('django.middleware.cache.FetchFromCacheMiddleware')
 
 CACHES = {
     'default': {
