@@ -70,13 +70,22 @@ def add_game_into_db_single_from_bot(name, cover=None):
     :param name: str()-name of the game
     :return: model object of new added game
     """
-    dirs_by_date = datetime.now().strftime('\\%Y\\%m\\%d\\')
+    # dirs_by_date = datetime.now().strftime('\\%Y\\%m\\%d\\')
+    # file_name = f"{uuid.uuid4()}.jpg"
+    # full_path = f"{settings.MEDIA_UPLOADS_ROOT}\\games_cover{dirs_by_date}"
+    # file_fp = f"{full_path}{file_name}"
+    #
+    # cover_path_for_field = f"\\uploads\\games_cover{dirs_by_date}{file_name}"
+    # default_cover_path_for_field = f"\\uploads\\games_cover{dirs_by_date}default_cover.jpg"
+    # default_cover_download_source = os.getenv('DEFAULT_GAME_COVER_SOURCE')
+
+    dirs_by_date = datetime.now().strftime('/%Y/%m/%d/')
     file_name = f"{uuid.uuid4()}.jpg"
-    full_path = f"{settings.MEDIA_UPLOADS_ROOT}\\games_cover{dirs_by_date}"
+    full_path = f"{settings.MEDIA_UPLOADS_ROOT}/games_cover{dirs_by_date}"
     file_fp = f"{full_path}{file_name}"
 
-    cover_path_for_field = f"\\uploads\\games_cover{dirs_by_date}{file_name}"
-    default_cover_path_for_field = f"\\uploads\\games_cover{dirs_by_date}default_cover.jpg"
+    cover_path_for_field = f"/uploads/games_cover{dirs_by_date}{file_name}"
+    default_cover_path_for_field = f"/uploads/games_cover{dirs_by_date}default_cover.jpg"
     default_cover_download_source = os.getenv('DEFAULT_GAME_COVER_SOURCE')
 
     os.makedirs(full_path, exist_ok=True)
