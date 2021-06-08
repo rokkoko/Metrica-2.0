@@ -40,7 +40,7 @@ CACHES = {
         },
     'fs_cache': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': os.getenv('FS_CACHE_PATH')
+        'LOCATION': os.path.join(BASE_DIR, 'tmp/django_cache/')
     }
 }
 
