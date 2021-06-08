@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'django_filters',
     'django_summernote',
     'swagger_render',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -234,3 +235,7 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 CELERY_TIMEZONE = 'Europe/Moscow'
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+AWS_STORAGE_BUCKET_NAME = 'a-metrica-bucket'
