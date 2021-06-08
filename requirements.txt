@@ -43,6 +43,9 @@ click==7.1.2; python_version >= "3.6" and python_full_version < "3.0.0" or pytho
 colorama==0.4.4; python_version >= "3.6" and python_full_version < "3.0.0" and sys_platform == "win32" or sys_platform == "win32" and python_version >= "3.6" and python_full_version >= "3.5.0" \
     --hash=sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2 \
     --hash=sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b
+dj-database-url==0.5.0 \
+    --hash=sha256:4aeaeb1f573c74835b0686a2b46b85990571159ffc21aa57ecd4d1e1cb334163 \
+    --hash=sha256:851785365761ebe4994a921b433062309eb882fedd318e1b0fcecc607ed02da9
 django-anymail==8.3; python_version >= "3.5" \
     --hash=sha256:fde346365937de91feee4451cbbf416f4af841ccc5d136c5fdfcb983827703c1 \
     --hash=sha256:caba487937d14d7d6ff06551db4e4bfb3e45eff892f9911abd7a214716b65be5
@@ -55,6 +58,9 @@ django-debug-toolbar==3.2.1; python_version >= "3.6" \
 django-filter==2.4.0; python_version >= "3.5" \
     --hash=sha256:84e9d5bb93f237e451db814ed422a3a625751cbc9968b484ecc74964a8696b06 \
     --hash=sha256:e00d32cebdb3d54273c48f4f878f898dced8d5dfaad009438fe61ebdf535ace1
+django-heroku==0.3.1 \
+    --hash=sha256:6af4bc3ae4a9b55eaad6dbe5164918982d2762661aebc9f83d9fa49f6009514e \
+    --hash=sha256:2bc690aab89eedbe01311752320a9a12e7548e3b0ed102681acc5736a41a4762
 django-redis==4.12.1; python_version >= "3.5" \
     --hash=sha256:306589c7021e6468b2656edc89f62b8ba67e8d5a1c8877e2688042263daa7a63 \
     --hash=sha256:1133b26b75baa3664164c3f44b9d5d133d1b8de45d94d79f38d1adc5b1d502e5
