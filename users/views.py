@@ -347,10 +347,11 @@ class UsersCreateView(CreateView):
         """
         Override parent method for reduce in a half size of avatar sent by users
         """
-        new_user_bounded_form = form.save(commit=False)
-        user_avatar = self.request.FILES['avatar']
-        new_user_bounded_form.avatar = avatar_double_reducer(user_avatar)
-        new_user_bounded_form.save()
+        if self.request.FILES.get('avatar'):
+            new_user_bounded_form = form.save(commit=False)
+            user_avatar = self.request.FILES['avatar']
+            new_user_bounded_form.avatar = avatar_double_reducer(user_avatar)
+            new_user_bounded_form.save()
 
         return super().form_valid(form)
 
