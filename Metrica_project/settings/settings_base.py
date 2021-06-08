@@ -230,7 +230,7 @@ CELERY_RESULT_BACKEND = 'redis://localhost'
 CELERY_BEAT_SCHEDULE = {
     'send_stats_top_players_msg_every_monday': {
         'task': 'telegram_bot.tasks.weekly_stats_tg_notice_top_players',
-        'schedule': crontab(minute=0, hour= 16, day_of_week=1),
+        'schedule': crontab(minute=0, hour=16, day_of_week=1),
     },
 }
 CELERY_TIMEZONE = 'Europe/Moscow'
