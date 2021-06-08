@@ -194,7 +194,7 @@ LOGGING = {
         'file_debug': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': f'{BASE_DIR}\\warning.log',
+            'filename': f'{BASE_DIR}/warning.log',
             'formatter': 'verbose'
         },
     },
