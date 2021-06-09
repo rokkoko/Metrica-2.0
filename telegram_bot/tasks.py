@@ -15,5 +15,6 @@ def weekly_stats_tg_notice_top_players(chats_ids=CHAT_IDS_STATS_DELIVER_ORDERED,
     """
     Task for celery scheduler
     """
+    print(f"!!!!!!!!!!{chats_ids}")
     stats_message = get_weekly_top_players_public_sessions_repr()
     send_statistic_to_tg_bot(chats_ids, stats_message, bot_token)
