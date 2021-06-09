@@ -299,6 +299,7 @@ def set_weekly_top_players_stats_schedule(update, context):
     # a model field
     chat = Chat.objects.get(chat_id=chat_id)
     chat.is_stats_deliver_ordered = True
+    chat.save()
 
 
 def unset_weekly_top_players_stats_schedule(update, context):
