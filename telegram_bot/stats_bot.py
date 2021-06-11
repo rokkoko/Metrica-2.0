@@ -12,7 +12,7 @@ from telegram.ext import Dispatcher, CommandHandler, MessageHandler, Filters, Co
 from dotenv import load_dotenv, find_dotenv
 
 from Metrica_project.income_msg_parser import parse_message
-from games.db_actions import stats_repr, add_scores, get_game_names_list, get_game_id_by_name, add_giffer_scores
+from games.db_actions import stats_repr, add_scores, get_game_names_list, get_game_id_by_name, add_tg_animation_scores
 from .db_actions import top_3_week_players_repr_public_sessions
 from telegram_bot.models import Chat
 
@@ -73,7 +73,7 @@ def animation_callback(update, context):
     user_name = update.message.from_user.username
     score = 1
     update.message.reply_text(f"Статы (+1) ботяры '{user_name}' занесены в Метрику")
-    add_giffer_scores(user_name, score)
+    add_tg_animation_scores(user_name, score)
 
 
 def add_game_command(update, context):
