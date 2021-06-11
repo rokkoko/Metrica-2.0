@@ -471,6 +471,15 @@ class FriendAddView(CreateView):
     friendship_exist_msg  = "You're already in '{friend}' friend_list."
     error_msg = "You can't be a friend with yourself"
 
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Protection against unauthorized access to the friendship management page
+        """
+        if self.kwargs['pk'] != request.user.pk:
+            messages.error(request, self.perm_denied_msg)
+            return HttpResponseRedirect(reverse_lazy('users:users_index'))
+        return super().dispatch(request, *args, **kwargs)
+
     def post(self, request, *args, **kwargs):
         """
         Override parent method for possibility of proceed two workflows on db: creating a friendship request
