@@ -30,8 +30,7 @@ DATABASES = {
     }
 }
 
-# if testing (sys.argv contain 'test') db settings set to
-# 'local db' sqlite3 and django connect to it to
+# if testing (sys.argv contain 'test') db settings set to local db' sqlite3 and django connect to it to
 # create tables for testings purpose
 if 'test' in sys.argv:
     DATABASES['default'] = {
@@ -39,6 +38,8 @@ if 'test' in sys.argv:
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 
+# Debug-toolbar settings
+MIDDLEWARE.insert(0, 'debug_toolbar.middleware.DebugToolbarMiddleware')
 # Debug toolbar will be available for requests from this IPs
 INTERNAL_IPS = [
     '127.0.0.1',
