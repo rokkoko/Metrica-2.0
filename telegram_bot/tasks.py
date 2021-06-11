@@ -7,7 +7,6 @@ from telegram_bot.db_actions import get_weekly_top_players_public_sessions_repr
 
 
 BOT_TOKEN = django.conf.settings.BOT_TOKEN
-# CHAT_IDS_STATS_DELIVER_ORDERED = Chat.objects.filter(is_stats_deliver_ordered=True).values_list('chat_id', flat=True)
 
 
 @app.task()
