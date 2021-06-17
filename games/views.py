@@ -109,8 +109,9 @@ class GamesAddView(CreateView):
         """
         Reduce incoming users game_cover images
         """
-        game_cover = request.FILES["cover_art"]
-        request.FILES["cover_art"] = game_cover_double_reducer(game_cover)
+        if request.FILES.get("cover_art"):
+            game_cover = request.FILES["cover_art"]
+            request.FILES["cover_art"] = game_cover_double_reducer(game_cover)
 
         return super().post(request, args, kwargs)
 
