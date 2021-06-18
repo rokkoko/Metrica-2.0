@@ -193,7 +193,7 @@ def process_add_stats_message(update, context):
     result_msg = f'На {date.datetime.today().replace(microsecond=0)} ' \
                  f'по игре "{game}" {"статы для текущих игрококов"}:\n'
     for user_name, score in result_dict.items():
-        result_msg += user_name + ': ' + str(score) + '\n'
+        result_msg += user_name + ': ' + str("Register first, please" if not score else score) + '\n'
 
     update.message.reply_text(result_msg)
 
