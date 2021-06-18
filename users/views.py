@@ -190,13 +190,21 @@ class UsersDetailView(LoginRequiredMixin, DetailView):
             if not sessions_data:
                 continue
 
-            game_data = {
-                "name": game.name,
-                "cover": game.cover_art.url,
-                "total_score": game.total_score,
-                "times_played": game.times_played,
-                "sessions": sessions_data
-            }
+            if game.cover_art.__bool__():  # checks for associated file for "cover_art" field (model attr)
+                game_data = {
+                    "name": game.name,
+                    "cover": game.cover_art.url,
+                    "total_score": game.total_score,
+                    "times_played": game.times_played,
+                    "sessions": sessions_data
+                }
+            else:
+                game_data = {
+                    "name": game.name,
+                    "total_score": game.total_score,
+                    "times_played": game.times_played,
+                    "sessions": sessions_data
+                }
             games_data.append(game_data)
 
         context["games"] = games_data
