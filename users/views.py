@@ -190,7 +190,7 @@ class UsersDetailView(LoginRequiredMixin, DetailView):
             if not sessions_data:
                 continue
 
-            if game.cover_art.__bool__():  # checks for associated file for "cover_art" field (model attr)
+            if bool(game.cover_art):  # checks for associated file for "cover_art" field (model attr)
                 game_data = {
                     "name": game.name,
                     "cover": game.cover_art.url,
