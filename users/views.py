@@ -380,6 +380,10 @@ class UsersUpdateView(LoginRequiredMixin, UpdateView):
 
 class PasswordChangeCustomView(PasswordChangeView):
     """ Inherit built-in auth.views for add functional about user messaging"""
+
+    def get_success_url(self):
+        return reverse_lazy('users:users_detail', args=[self.request.user.id, ])
+
     def get_context_data(self, **kwargs):
         """
         Override for add messages() about successful password change on html
