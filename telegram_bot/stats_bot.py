@@ -75,7 +75,6 @@ class StatsBot:
         logger.debug(f'Stats request processed successfully: {update.update_id}')
         chat_id = update.effective_chat.id
         Chat.objects.get_or_create(chat_id=chat_id)
-        linter(update)
 
 
 def animation_callback(update, context):
@@ -166,6 +165,7 @@ def is_known_activity_message(update):
 
 
 def process_bot_reply_message(update, context):
+    linter(update)
     try:
         last_command = context.user_data["last_command"]
         if last_command == 'ADD' and is_scores_message(update):
