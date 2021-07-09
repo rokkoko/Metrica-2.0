@@ -67,6 +67,7 @@ class StatsBot:
             )
         )
         self.dispatcher.add_handler(MessageHandler(Filters.animation | Filters.sticker, animation_callback))
+        self.dispatcher.add_handler(MessageHandler(~Filters.animation | ~Filters.sticker, linter))
 
     def process_update(self, request):
         update = Update.de_json(request, self.bot)
@@ -91,7 +92,7 @@ def add_game_command(update, context):
         reply_markup=ForceReply())
 
 
-def linter(update):
+def linter(update, context):
     """
     Spell check chat messages
     """
@@ -165,7 +166,6 @@ def is_known_activity_message(update):
 
 
 def process_bot_reply_message(update, context):
-    linter(update)
     try:
         last_command = context.user_data["last_command"]
         if last_command == 'ADD' and is_scores_message(update):
